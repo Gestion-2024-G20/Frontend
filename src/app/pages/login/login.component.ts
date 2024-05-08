@@ -40,11 +40,7 @@ export class LoginComponent {
   onSubmit(): void {
     console.log(this.form.value);
     let values = this.form.value;
-    try {
-      this.authService.login(values.username, values.password); 
-    } catch (error) {
-      // todo show error db
-    }
+    this.authService.login(values.username, values.password); 
   }
 
 

@@ -1,0 +1,11 @@
+<div *ngIf="responseContent">
+  <div [innerHTML]="responseContent"></div>
+  @for (item of responseContent; track $index) {
+    <p> item {{$index}} id_user: {{item.id_user}}</p>
+    <p> item {{$index}} mail: {{item.mail}}</p>
+    <p> item {{$index}} cellphone: {{item.celular}}</p>
+    <p> item {{$index}} username: {{item.username}}</p>
+    <p> item {{$index}} password: {{item.password}}</p>
+
+  }
+</div>
