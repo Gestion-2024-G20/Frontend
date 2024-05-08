@@ -1,1 +1,29 @@
-<p>home works!</p>
+<h1>Grupos</h1>
+
+<!-- table -->
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Time Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let group of userGroups">
+            <td>{{ group.id_group }}</td>
+            <td>{{ group.name }}</td>
+            <td>{{ group.time_created }}</td>
+            <td>
+                <button class="btn btn-primary" (click)="editGroup()">Edit</button>
+                <button class="btn btn-danger" (click)="deleteGroup()">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div>
+    <input type="text" [(ngModel)]="groupName" placeholder="Enter group name">
+    <button class="btn btn-success" (click)="createGroup()">Create Group</button>
+</div>
