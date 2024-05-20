@@ -127,4 +127,6 @@
             </table>
         </div>
     </div>
+
+    <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>
 </div>
