@@ -31,6 +31,8 @@ import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
 import { MatButton } from '@angular/material/button';
+import { FilterExpendituresDialogComponent } from '../../components/filterExpendituresDialog/filterExpendituresDialog.component';
+import { ExpendituresFilter } from '../../../classes/expendituresFilter';
 
 export interface MembersTableElement {
   id_user: number; 
@@ -79,7 +81,8 @@ export class GroupComponent implements OnInit {
 
   public displayedColumnsMembers: string[] = ['username', 'type', 'actions'];
   public dataSourceMembers = new MatTableDataSource<MembersTableElement>([]);
-  
+
+  public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
   constructor(
     private userService: UserService,
@@ -155,7 +158,8 @@ export class GroupComponent implements OnInit {
   async getExpendituresData(): Promise<void> {
     // Get expenditures data
     try {
-      const expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(this.id_group));
+      this.expendituresFilter.id_group = this.id_group;
+      const expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(this.expendituresFilter));
       this.expenditures = expenditures!;
     } catch (error) {
       // TODO: handle error
@@ -332,6 +336,22 @@ export class GroupComponent implements OnInit {
       return;
     }
     this.snackBarService.open('Expenditure created', 'success');
+
+    await this.refreshData();
+
+  }
+
+  async filterExpenditures() : Promise<void> {
+    let dialogRef = this.dialog.open(FilterExpendituresDialogComponent, {
+      width: '500px', 
+      data: {categories: this.categories, members:this.totalmembers}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
+    this.expendituresFilter.id_category = rsp.id_category;
+    this.expendituresFilter.id_user = rsp.id_user;
 
     await this.refreshData();
 
