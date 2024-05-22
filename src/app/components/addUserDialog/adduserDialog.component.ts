@@ -39,6 +39,8 @@ export class AddUserDialogComponent {
         this.data.msgError = "Must insert an username";
         return; 
       }
+
+      console.log("la data que le llega al componente es: "+ this.data.value);
       let usersFound = await lastValueFrom(this.userService.getUserByUsername(this.data.value)) as User[];
       if (!usersFound || usersFound.length < 1) {
         this.data.showError = true;
@@ -51,6 +53,7 @@ export class AddUserDialogComponent {
         return; 
       }
 
-      this.dialogRef.close(""+usersFound[0].id_user);
+      //Devuelvo al usuario que se ha insertado
+      this.dialogRef.close(""+usersFound[0].username);
     }
 }

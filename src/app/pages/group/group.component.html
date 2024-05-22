@@ -38,7 +38,10 @@
                         <tr mat-row *matRowDef="let row; columns: displayedColumnsMembers;"></tr>
                 </table>
                 </div>
-                @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-primary mt-4" type="button" (click)="addUser()" *ngIf="this.isAdmin">Invitar usuario</button>
+                    <button class="btn btn-warning mt-4" type="button" (click)="listadoInvitados()" *ngIf="this.isAdmin">Ver invitados</button>
+                </div>
             </div>
         </div>
         <div class="item item-2" fxFlex="50%" *ngIf="this.isAdmin"> 
@@ -129,4 +132,6 @@
             </table>
         </div>
     </div>
+
+    <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>
 </div>
