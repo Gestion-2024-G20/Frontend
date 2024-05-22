@@ -352,6 +352,8 @@ export class GroupComponent implements OnInit {
     }
     this.expendituresFilter.id_category = rsp.id_category;
     this.expendituresFilter.id_user = rsp.id_user;
+    this.expendituresFilter.min_date = rsp.min_date;
+    this.expendituresFilter.max_date = rsp.max_date;
 
     await this.refreshData();
 

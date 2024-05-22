@@ -25,6 +25,14 @@ getGroupExpenditures(expendituresFilter: ExpendituresFilter): Observable<Array<E
     params = params.append('id_user', expendituresFilter.id_user);
   }
 
+  if (expendituresFilter.min_date && expendituresFilter.min_date != ''){
+    params = params.append('min_date', expendituresFilter.min_date);
+  }
+
+  if (expendituresFilter.max_date && expendituresFilter.max_date != ''){
+    params = params.append('max_date', expendituresFilter.max_date);
+  }
+
   return this.http.get<ResponseModel<Array<Expenditure>>>(`${environment.apiUrl}/expenditures/` + expendituresFilter.id_group, {params: params })
     .pipe(
       map(response => {
