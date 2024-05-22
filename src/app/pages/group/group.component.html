@@ -40,8 +40,10 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumnsMembers;"></tr>
                 </table>
                 <section class="buttons">
-                    @if (this.isAdmin){<button class="btn btn-primary" type="button" (click)="addUser()">Agregar
-                        usuario</button>}
+                    @if (this.isAdmin){
+                        <button class="btn btn-primary" type="button" (click)="addUser()">Invitar usuario</button>
+                        <button class="btn btn-primary" type="button" (click)="listadoInvitados()">Ver invitados</button>
+                    }
                 </section>
             </div>
         </mat-expansion-panel>
@@ -146,4 +148,7 @@
             </div>
         </mat-expansion-panel>
     </mat-accordion>
+
+    <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>
+
 </div>

@@ -39,5 +39,28 @@
             }
         </tbody>
     </table>
+
+    <br>
+    <h2 class="title">Invitaciones</h2>
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Grupo</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (invitation of this.userInvitations; track $index) {
+                <tr>
+                    <td>{{ invitation.id_group }}</td>
+                    <td class="buttons col-md">
+                        <button class="btn btn-success" (click)="acceptInvitation(invitation.id_invitation)">Aceptar</button>
+                        <button class="btn btn-danger" (click)="rejectInvitation(invitation.id_invitation)">Cancelar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
