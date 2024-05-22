@@ -25,4 +25,8 @@ export class HeaderComponent {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  getUsername(){
+    return this.authService.getUsername()
+  }
 }

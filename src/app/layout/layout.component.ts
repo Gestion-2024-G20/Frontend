@@ -28,8 +28,4 @@ export class LayoutComponent{
   constructor(private router: Router) {
   }
 
-  navigateTo(route: string){
-    this.router.navigate(['/home']);
-  }
-
 }

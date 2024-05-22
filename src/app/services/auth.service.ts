@@ -8,6 +8,7 @@ import { SnackbarService } from './snackbar.service';
 
 const LOGGEDIN = 'splitifyLoggedIn'
 const USERID = 'userId'
+const USERNAME = 'username'
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,7 @@ export class AuthService {
       this.snackBarService.open('Login success!', 'success');
       localStorage.setItem(LOGGEDIN, 'true');
       localStorage.setItem(USERID, String(user.id_user));
+      localStorage.setItem(USERNAME, String(user.username))
       this.router.navigate(['/home']);
       return Promise.resolve();
     } catch (error) {
@@ -58,6 +60,10 @@ export class AuthService {
 
   loggedUserId(): number  {
     return +(localStorage.getItem(USERID) as String);
+  }
+
+  getUsername() {
+    return localStorage.getItem(USERNAME);
   }
 
   async register(
