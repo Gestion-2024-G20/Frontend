@@ -23,8 +23,8 @@ export interface FilterExpendituresDialogData {
   id_member: number;
   min_date: Date;
   max_date: Date;
-  msgDescriptionError: string;  
-  showDescriptionError: boolean;
+  msgError: string;  
+  showError: boolean;
 }
 @Component({
   selector: 'filterExpendituresDialog.component',
@@ -45,13 +45,18 @@ export class FilterExpendituresDialogComponent {
     }
     async onClick(): Promise<void> {
       try { 
+        if (this.data.min_date > this.data.max_date ){
+          this.data.showError = true;
+          this.data.msgError = "La fecha mínima no puede ser mayor a la máxima";
+          return; 
+        }
         const format = 'yyyy-MM-dd';
         const locale = 'en-US';
         this.dialogRef.close({id_user: this.data.id_member, id_category: this.data.id_category, 
           min_date: formatDate(this.data.min_date, format, locale), 
           max_date: formatDate(this.data.max_date, format, locale)}); 
       } catch (e) {
-        this.data.msgDescriptionError = "Error filtering expenditures";
+        this.data.msgError = "Error filtrando los gastos";
         return; 
       } 
 
