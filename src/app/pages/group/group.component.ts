@@ -374,6 +374,7 @@ export class GroupComponent implements OnInit {
     if (!rsp){
       return;
     }
+  }
 
   async leaveGroup(): Promise<void> {
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
