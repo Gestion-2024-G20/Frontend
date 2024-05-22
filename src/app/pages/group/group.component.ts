@@ -374,6 +374,13 @@ export class GroupComponent implements OnInit {
     if (!rsp){
       return;
     }
+
+  async leaveGroup(): Promise<void> {
+    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
+    await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
+    this.snackBarService.open('You left the group', 'success');
+    await this.refreshData();
+    this.router.navigate(['/home']);
   }
 
   goTo(){
@@ -383,6 +390,8 @@ export class GroupComponent implements OnInit {
   isAdminLoggedIn(){
     return 
   }
+
+
   
 
 }
