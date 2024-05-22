@@ -1,131 +1,149 @@
-<div class="container content">
+<div class="content">
     <section class="header-section">
-        <h1 class="title"> <i class="fa fa-users" aria-hidden="true"></i> {{ this.group.name }}</h1>
-        <!-- <button class="btn btn-primary btn-admin" (click)="goTo()">Administrar</button> -->
+        <h2 class="title"> {{ this.group.name }}</h2>
     </section>
-    <div class="container" fxLayout fxLayoutAlign="center">
-        <div class="item item-1" fxFlex="50%">
+    <mat-accordion multi>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h5><i class="fa fa-users" aria-hidden="true"></i> MIEMBROS</h5>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
             <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
-                <h4 class="m-8"> <mat-icon>list</mat-icon> Miembros</h4>
+                <table mat-table [dataSource]="dataSourceMembers" class="mat-elevation-z8">
+                    <!-- Username Column -->
+                    <ng-container matColumnDef="username">
+                        <th mat-header-cell *matHeaderCellDef> Username </th>
+                        <td mat-cell *matCellDef="let element" [class.make-gold]='element.type == "admin"'>
+                            {{element.username}} </td>
+                    </ng-container>
 
+                    <!-- Tipo Column -->
+                    <ng-container matColumnDef="type">
+                        <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                        <td mat-cell *matCellDef="let element" [class.make-gold]='element.type == "admin"'>
+                            {{element.type}} </td>
+                    </ng-container>
 
-                <div class="p-2 text-center tablamiembros">
-                    <table mat-table [dataSource]="dataSourceMembers" class="mat-elevation-z8">
+                    <!-- Actions Column -->
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> Actions </th>
+                        <td mat-cell *matCellDef="let element" [class.make-gold]='element.type == "admin"'>
+                            <button *ngIf="loggedUserId != element.id_user && isAdmin" type="button"
+                                class="btn btn-danger" (click)="deleteUser(element.id_user)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
 
-                        <!-- Username Column -->
-                        <ng-container matColumnDef="username">
-                            <th mat-header-cell *matHeaderCellDef> Username </th>
-                            <td mat-cell *matCellDef="let element"  [class.make-gold]='element.type == "admin"'> {{element.username}} </td>
-                        </ng-container>
-
-                        <!-- Tipo Column -->
-                        <ng-container matColumnDef="type">
-                            <th mat-header-cell *matHeaderCellDef> Tipo </th>
-                            <td mat-cell *matCellDef="let element"  [class.make-gold]='element.type == "admin"'> {{element.type}} </td>
-                        </ng-container>
-                        
-                        <!-- Actions Column -->
-                        <ng-container matColumnDef="actions">
-                            <th mat-header-cell *matHeaderCellDef> Actions </th>
-                            <td mat-cell *matCellDef="let element"  [class.make-gold]='element.type == "admin"'> 
-                                <button *ngIf="loggedUserId != element.id_user && isAdmin" type="button" class="btn btn-danger"  (click)="deleteUser(element.id_user)">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="displayedColumnsMembers"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumnsMembers;"></tr>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsMembers"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumnsMembers;"></tr>
                 </table>
-                </div>
-                @if (this.isAdmin){<button class="btn btn-primary mt-4" type="button" (click)="addUser()">Agregar usuario</button>}
+                <section class="buttons">
+                    @if (this.isAdmin){<button class="btn btn-primary" type="button" (click)="addUser()">Agregar
+                        usuario</button>}
+                </section>
             </div>
-        </div>
-        <div class="item item-2" fxFlex="50%" *ngIf="this.isAdmin"> 
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h5><i class="fa fa-list"> </i>CATEGORIAS</h5>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
             <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
-                <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
-                    <h4 class="m-8"> <mat-icon> add</mat-icon>Nueva Categoría</h4>
-                    <div>
-                        <input type="text" class="form-control" id="newCategoryName" name="newCategoryName" placeholder="Nombre" ngModel>
-                        <input type="text" class="form-control" id="newCategoryDescription" name="newCategoryDescription" placeholder="Descripción" ngModel>
-                        @for (member of this.totalmembers; track $index) {
-                            <div class="row mt-2">
-                                <div class="col-sm-4 col-form-label">
-                                    <h5>{{ member.username }}</h5>
-                                </div>
-                                <div class="col-sm-8">
-                                    <input type="numeric" min="0" max="100" class="form-control" [name]="'percentage' + member.id_user" placeholder="porcentaje" ngModel>
-                                </div>
-                            </div>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col"> Titulo</th>
+                            <th scope="col"><mat-icon>description</mat-icon> Descripción</th>
+                            <th scope="col">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (category of this.categories; track $index) {
+
+                        <tr>
+                            <td scope="row">{{$index + 1}}</td>
+                            <td>{{category.name}}</td>
+                            <td>{{category.description}}</td>
+                            <td class="buttons">
+                                <button type="button" class="btn btn-primary firstButton"
+                                    (click)="detailCategory(category)">Detalle</button>
+                                <button *ngIf="this.isAdmin" type="button" class="btn btn-danger"
+                                    (click)="deleteCategory(category)">Eliminar categoría</button>
+                            </td>
+                        </tr>
                         }
-                        <button class="btn btn-primary mt-4" type="submit">Crear categoría</button>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-5 p-3 bg-primary-subtle text-primary-emphasis rounded" *ngIf="this.isAdmin">
+                <form #categoryForm="ngForm" (ngSubmit)="createCategory(categoryForm.value)">
+                    <h5> <mat-icon> add</mat-icon>Nueva Categoría</h5>
+                    <div>
+                        <input type="text" class="form-control" id="newCategoryName" name="newCategoryName"
+                            placeholder="Nombre" ngModel>
+                        <input type="text" class="form-control" id="newCategoryDescription"
+                            name="newCategoryDescription" placeholder="Descripción" ngModel>
+                        @for (member of this.totalmembers; track $index) {
+                        <div class="row mt-2">
+                            <div class="col-sm-4 col-form-label">
+                                <h5>{{ member.username }}</h5>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="numeric" min="0" max="100" class="form-control"
+                                    [name]="'percentage' + member.id_user" placeholder="porcentaje" ngModel>
+                            </div>
+                        </div>
+                        }
                     </div>
+                    <section class="buttons">
+                        <button class="btn btn-primary mt-2" type="submit">Crear categoría</button>
+                    </section>
                 </form>
             </div>
-        </div> 
-    </div>
+        </mat-expansion-panel>
 
-    <div class="m-3">
-        <h3><mat-icon>list</mat-icon> Categorias</h3>
-        <div class="p-2 text-center">
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col"> Titulo</th>
-                        <th scope="col"><mat-icon>description</mat-icon> Descripción</th>
-                        <th scope="col">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (category of this.categories; track $index) {
-                        
+        <mat-expansion-panel expanded>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <h5><i class="fa fa-dollar-sign"></i> GASTOS</h5>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
+                <section class="buttons">
+                    <button class="btn btn-primary" type="button" (click)="filterExpenditures()">Filtrar gastos</button>
+                    <button class="btn btn-primary" type="button" (click)="createExpenditure()">Añadir Gasto</button>
+                </section>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
                         <tr>
-                        <td scope="row">{{$index + 1}}</td>
-                        <td>{{category.name}}</td>
-                        <td>{{category.description}}</td>
-                        <td class="buttons">
-                            <button type="button" class="btn btn-primary firstButton" (click)="detailCategory(category)">Detalle</button>
-                            <button *ngIf="this.isAdmin" type="button" class="btn btn-danger" (click)="deleteCategory(category)">Eliminar categoría</button>
-                        </td>
+                            <th scope="col">#</th>
+                            <th scope="col">User Id</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col" *ngIf="this.isAdmin">Acción</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+                    </thead>
+                    <tbody>
+                        @for (e of this.expenditures; track $index) {
 
-    <div class="m-3">
-        <section class="header-section">
-            <h3><mat-icon>attach_money</mat-icon> Gastos</h3>
-            <button class="btn btn-primary" (click)="filterExpenditures()">Filtrar gastos</button>
-            <button class="btn btn-success" (click)="createExpenditure()">Añadir Gasto</button>
-        </section>
-        <div class="p-2 text-center">
-            <table class="table table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">User Id</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col" *ngIf="this.isAdmin">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (e of this.expenditures; track $index) {
-                        
                         <tr>
-                        <td scope="row">{{$index + 1}}</td>
-                        <td>{{e.id_user}}</td>
-                        <td>{{e.description}}</td>
-                        <td>{{e.amount}}</td>
-                        <td *ngIf="this.isAdmin">
-                        </td>
+                            <td scope="row">{{$index + 1}}</td>
+                            <td>{{e.id_user}}</td>
+                            <td>{{e.description}}</td>
+                            <td>{{e.amount}}</td>
+                            <td *ngIf="this.isAdmin">
+                            </td>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
 </div>

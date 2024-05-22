@@ -33,7 +33,7 @@ import { ListSharesDialogComponent } from '../../components/listSharesDialog/lis
 import { MatButton } from '@angular/material/button';
 import { FilterExpendituresDialogComponent } from '../../components/filterExpendituresDialog/filterExpendituresDialog.component';
 import { ExpendituresFilter } from '../../../classes/expendituresFilter';
-
+import {MatExpansionModule} from '@angular/material/expansion';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -55,7 +55,8 @@ export interface MembersTableElement {
     MatCardHeader,
     MatCardTitle,
     MatCardContent, 
-    MatTableModule
+    MatTableModule,
+    MatExpansionModule
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
