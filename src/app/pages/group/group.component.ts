@@ -31,6 +31,9 @@ import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
 import { MatButton } from '@angular/material/button';
+import { InvitationService } from '../../services/invitation.service';
+import { Invitation } from '../../../classes/invitation';
+import { InvitationListDialogComponent } from '../../components/invitation-list-dialog/invitation-list-dialog.component';
 
 export interface MembersTableElement {
   id_user: number; 
@@ -92,7 +95,8 @@ export class GroupComponent implements OnInit {
     private snackBarService: SnackbarService, 
     private route: ActivatedRoute,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private invitationService: InvitationService
   ) { }
   
   async getGroupData(): Promise<void> {
@@ -280,24 +284,48 @@ export class GroupComponent implements OnInit {
   async addUser() : Promise<void> {
     let dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '250px',
-      data: {title: "Add user to group", content: "Insert the username to add", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
+      data: {title: "Invite user to group", content: "Insert a username ", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
     });
-    let user_id = await lastValueFrom(dialogRef.afterClosed());
-
-    const newGroupMember = new GroupMember;
-    newGroupMember.id_user = +user_id; 
-    newGroupMember.id_group = this.id_group; 
-    for (const member of this.totalmembers) {
-      if (member.id_user == newGroupMember.id_user){
-          this.snackBarService.open('Username already in group', 'info');
-          return; 
-        }
+    let username = await lastValueFrom(dialogRef.afterClosed());
+    if (!username){
+      //console.log("Entré acá!");
+      return;
     }
-    const groupMember = await lastValueFrom(this.groupMemberService.postGroupMember(newGroupMember)) as GroupMember;
-    if (!groupMember) {
+    
+    //console.log("El nombre es" + username);
+    const user = await lastValueFrom(this.userService.getUserByUsername(username)) as User[] | null;
+    if (!user){
+      this.snackBarService.open('Username not found', 'info');
+      return;
+    }
+
+    //console.log(user[0].username);
+
+    let objetoUser = user[0];
+    //Obtengo las invitaciones cuyo id de grupo coincida con el id del grupo
+    const invitaciones = await lastValueFrom(this.invitationService.getInvitationsByGroupId(this.id_group)) as Invitation[] | null;
+
+    //Ahora quiero ver si existe una invitación con ese id de usuario (quiero usar objetoUser.id_user)
+
+    if (invitaciones){
+      for (const i of invitaciones){
+        if (i.id_user === objetoUser.id_user){
+          this.snackBarService.open('An invitation has already been sent to this user', 'info');
+          return;
+        }
+      }
+    }
+
+    //Creo la invitación
+    const invitation = new Invitation;
+    invitation.id_user = user[0].id_user;
+    invitation.id_group = this.id_group;
+    invitation.status = "Pendiente";
+    const createdInvitation = await lastValueFrom(this.invitationService.createInvitation(invitation)) as Invitation;
+    if (!createdInvitation) {
       this.snackBarService.open('Could not add user to group', 'error');
     }
-    this.snackBarService.open('Added user to group', 'success');
+    this.snackBarService.open('An invitation has been sent to user ' + user[0].username + '', 'success');
 
     await this.refreshData();
 
@@ -313,7 +341,8 @@ export class GroupComponent implements OnInit {
     if (!groupCreatedName){
       return;
     }
-    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.members[index].id_user, this.id_group)) as [GroupMember];
+
+    let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(index, this.id_group)) as [GroupMember];
     console.log(groupMemberDeleteArray[0]);
     let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
     console.log(groupMemberDelete);
@@ -335,6 +364,16 @@ export class GroupComponent implements OnInit {
 
     await this.refreshData();
   }
+
+  async listadoInvitados(): Promise<void> {
+    let dialogRef = this.dialog.open(InvitationListDialogComponent, {
+      width: '500px', 
+      data: {id_group: this.id_group}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
 
   async leaveGroup(): Promise<void> {
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
