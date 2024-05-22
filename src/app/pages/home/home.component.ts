@@ -14,6 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ChangeGroupNameDialogComponent } from '../../components/changeGroupNameDialog/changeGroupNameDialog.component';
 import { NewGroupDialogComponent } from '../../components/newGroupDialog/newGroupDialog.component';
+import { Invitation } from '../../../classes/invitation';
+import { InvitationService } from '../../services/invitation.service';
 
 @Component({
   selector: 'app-home',
@@ -33,6 +35,7 @@ export class HomeComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
   public groupName: string = "";
+  public userInvitations: Array<Invitation> = []; 
 
   constructor(
     private groupService: GroupService, 
@@ -40,15 +43,27 @@ export class HomeComponent implements OnInit {
     private groupMemberService: GroupMemberService, 
     private snackBarService: SnackbarService, 
     public dialog: MatDialog, 
-    private router: Router
+    private router: Router,
+    private invitationService: InvitationService
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.refreshGroups();
-
-    console.log("User groups: ", this.userGroups);
+    this.refreshInvitations();
+    //console.log("User groups: ", this.userGroups);
 
   }
+
+  async refreshInvitations() {
+    this.userInvitations = [];
+    let userInvitations = await lastValueFrom(this.invitationService.getInvitationsByUserId(this.authService.loggedUserId())) as Array<Invitation> | null;
+    if (userInvitations) {
+      this.userInvitations.push(...userInvitations);
+    } 
+
+    return this.userInvitations;
+  }
+
   async refreshGroups() {
     this.userGroups = [];
     console.log(this.authService.loggedUserId());
@@ -99,6 +114,34 @@ export class HomeComponent implements OnInit {
     if (this.authService.isAuth()) {
       this.router.navigate(['/group/' + this.userGroups[index].id_group]);
     }
+  }
+
+
+  async acceptInvitation(index:number): Promise<void> {
+    const invitation = await lastValueFrom(this.invitationService.getInvitationById(index)) as Invitation;
+    if (!invitation) {
+      this.snackBarService.open('Invitation not found', 'error');
+      return;
+    }
+    const groupMember = new GroupMember();
+    groupMember.id_user = this.authService.loggedUserId();
+    groupMember.id_group = invitation.id_group;
+    groupMember.is_admin = false;
+    const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
+    if (!groupMemberCreated) {
+      this.snackBarService.open('Could not join group', 'error');
+      return;
+    }
+    this.snackBarService.open('Joined group', 'success');
+    await lastValueFrom(this.invitationService.deleteInvitation(invitation.id_invitation));
+    this.refreshGroups();
+    this.refreshInvitations();
+  }
+
+  async rejectInvitation(index:number): Promise<void> {
+    await lastValueFrom(this.invitationService.deleteInvitation(index));
+    this.snackBarService.open('Invitation rejected', 'success');
+    this.refreshInvitations();
   }
 
   deleteGroup(): void {
