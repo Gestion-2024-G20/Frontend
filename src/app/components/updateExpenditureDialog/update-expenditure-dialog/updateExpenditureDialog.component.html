@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Editar Gasto</h1>
+<div class="content">
+  <div mat-dialog-content>
+    <p>Cambie precio y categoría</p>
+    <div class="row">
+      <mat-form-field class="col-md-7">
+        <mat-label>$</mat-label>
+        <input matInput [(ngModel)]="data.amountString" cdkFocusInitial >
+      </mat-form-field>
+      <mat-form-field class="col-md-5">
+        <mat-label>Categoría</mat-label>
+        <mat-select [(ngModel)]="data.category_index" placeholder="Categoría">
+          @for(category of this.data.categories; track $index){
+            <mat-option value={{$index}}>{{category.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    @if (data.showAmountError) {
+      <mat-error>{{data.msgAmountError}}</mat-error>
+    }
+    @if (data.showCategorySelectError) {
+      <mat-error 
+      >{{data.msgCategorySelectError}}</mat-error>
+    }
+    <p>Ingrese una descripción</p>
+    <mat-form-field [style.width.%]=100>
+      <textarea matInput [(ngModel)]="data.description" cdkFocusInitial></textarea>
+    </mat-form-field>
+    @if (data.showDescriptionError) {
+      <mat-error 
+      >{{data.msgDescriptionError}}</mat-error>
+    }
+  </div>
+</div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button (click)="onClick()" >Ok</button>
+</div>

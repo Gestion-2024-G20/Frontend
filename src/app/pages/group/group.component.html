@@ -135,12 +135,14 @@
                         @for (e of this.expenditures; track $index) {
 
                         <tr>
-                            <td scope="row">{{$index + 1}}</td>
-                            <td>{{e.id_user}}</td>
-                            <td>{{e.description}}</td>
-                            <td>{{e.amount}}</td>
-                            <td *ngIf="this.isAdmin">
-                            </td>
+                        <td scope="row">{{$index + 1}}</td>
+                        <td>{{e.id_user}}</td>
+                        <td>{{e.description}}</td>
+                        <td>{{e.amount}}</td>
+                        <td *ngIf="this.isAdmin" class="buttons">
+                            <button type="button" class="btn btn-primary" (click)="updateExpenditure(e)">Editar Gasto</button>
+                            <button type="button" class="btn btn-danger" (click)="deleteExpenditure(e)">Eliminar Gasto</button>
+                        </td>
                         </tr>
                         }
                     </tbody>
