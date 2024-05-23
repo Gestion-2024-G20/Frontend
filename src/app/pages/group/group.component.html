@@ -128,6 +128,8 @@
                             <th scope="col">User Id</th>
                             <th scope="col">Descripción</th>
                             <th scope="col">Cantidad</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Fecha y hora</th>
                             <th scope="col" *ngIf="this.isAdmin">Acción</th>
                         </tr>
                     </thead>
@@ -139,6 +141,8 @@
                         <td>{{e.id_user}}</td>
                         <td>{{e.description}}</td>
                         <td>{{e.amount}}</td>
+                        <td>{{e.name_category}}</td>
+                        <td>{{e.time_created}}</td>
                         <td *ngIf="this.isAdmin" class="buttons">
                             <button type="button" class="btn btn-primary" (click)="updateExpenditure(e)">Editar Gasto</button>
                             <button type="button" class="btn btn-danger" (click)="deleteExpenditure(e)">Eliminar Gasto</button>

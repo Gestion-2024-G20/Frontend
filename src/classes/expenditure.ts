@@ -5,4 +5,6 @@ export class Expenditure {
     amount: number = 0;
     id_group: number = 0;
     description : String = "";
+    name_category: String = "";
+    time_created: String = "";
   }
