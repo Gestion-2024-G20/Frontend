@@ -30,7 +30,9 @@ import { ExpenditureService } from '../../services/expenditure.service';
 import { Expenditure } from '../../../classes/expenditure';
 import { AddExpenditureDialogComponent } from '../../components/addExpenditureDialog/addExpenditureDialog.component';
 import { ListSharesDialogComponent } from '../../components/listSharesDialog/listSharesDialog.component';
-import { MatButton } from '@angular/material/button';
+import { FilterExpendituresDialogComponent } from '../../components/filterExpendituresDialog/filterExpendituresDialog.component';
+import { ExpendituresFilter } from '../../../classes/expendituresFilter';
+import {MatExpansionModule} from '@angular/material/expansion';
 import { UpdateExpenditureDialogComponent } from '../../components/updateExpenditureDialog/update-expenditure-dialog/updateExpenditureDialog.component';
 import { DeleteExpenditureDialogComponent } from '../../components/deleteExpenditureDialog/delete-expenditure-dialog/deleteExpenditureDialog.component';
 import { InvitationListDialogComponent } from '../../components/invitation-list-dialog/invitation-list-dialog.component';
@@ -57,7 +59,8 @@ export interface MembersTableElement {
     MatCardHeader,
     MatCardTitle,
     MatCardContent, 
-    MatTableModule
+    MatTableModule,
+    MatExpansionModule
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
@@ -83,7 +86,8 @@ export class GroupComponent implements OnInit {
 
   public displayedColumnsMembers: string[] = ['username', 'type', 'actions'];
   public dataSourceMembers = new MatTableDataSource<MembersTableElement>([]);
-  
+
+  public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
   constructor(
     private userService: UserService,
@@ -160,7 +164,8 @@ export class GroupComponent implements OnInit {
   async getExpendituresData(): Promise<void> {
     // Get expenditures data
     try {
-      const expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(this.id_group));
+      this.expendituresFilter.id_group = this.id_group;
+      const expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(this.expendituresFilter));
       this.expenditures = expenditures!;
     } catch (error) {
       // TODO: handle error
@@ -420,6 +425,24 @@ export class GroupComponent implements OnInit {
     await this.refreshData();
     this.router.navigate(['/home']);
   }
+
+  async filterExpenditures() : Promise<void> {
+    let dialogRef = this.dialog.open(FilterExpendituresDialogComponent, {
+      width: '500px', 
+      data: {categories: this.categories, members:this.totalmembers}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
+    this.expendituresFilter.id_category = rsp.id_category;
+    this.expendituresFilter.id_user = rsp.id_user;
+    this.expendituresFilter.min_date = rsp.min_date;
+    this.expendituresFilter.max_date = rsp.max_date;
+
+    await this.refreshData();
+  }
+
 
   goTo(){
     //this.router.navigate(['/group/config/' + this.userGroups[index].id_group]);

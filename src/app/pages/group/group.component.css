@@ -1,12 +1,3 @@
-.btn-admin{
-    background-color: #3f51b5
-}
-
-.container {
-    margin-top: 30px;
-    gap: 30px;
-}
-
 mat-icon {
     vertical-align: middle;
 }
@@ -17,10 +8,19 @@ mat-icon {
 
 .buttons{
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 10px;
+    margin: 10px 0px 10px 0px;
 }
 
 .make-gold {
     background-color: #cccccc
+}
+
+mat-accordion{
+    margin-top: 10px;
+}
+
+mat-panel-title i{
+    margin-right: 10px;
 }

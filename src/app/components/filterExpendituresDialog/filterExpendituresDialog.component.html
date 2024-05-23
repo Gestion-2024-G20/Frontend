@@ -1,0 +1,54 @@
+<h1 mat-dialog-title>Filtrar gastos</h1>
+<div class="content">
+  <div mat-dialog-content>
+    <p>Seleccione el miembro</p>
+    <div class="row">
+      <mat-form-field class="col-md-5">
+        <mat-label>Miembro</mat-label>
+        <mat-select [(ngModel)]="data.id_member" placeholder="Miembro">
+          @for(member of this.data.members; track $index){
+          <mat-option value={{member.id_user}}>{{member.username}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <p>Seleccione la categoría</p>
+    <div class="row">
+      <mat-form-field class="col-md-5">
+        <mat-label>Categoría</mat-label>
+        <mat-select [(ngModel)]="data.id_category" placeholder="Categoría">
+          @for(category of this.data.categories; track $index){
+          <mat-option value={{category.id_category}}>{{category.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div id="div_fechas">
+      <p>Fecha mínima</p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="data.min_date" [matDatepicker]="pickerMin" placeholder="Seleccione una fecha">
+        <mat-datepicker-toggle matSuffix [for]="pickerMin"></mat-datepicker-toggle>
+        <mat-datepicker #pickerMin></mat-datepicker>
+      </mat-form-field>
+
+      <p>Fecha máxima</p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="data.max_date" [matDatepicker]="pickerMax" placeholder="Seleccione una fecha">
+        <mat-datepicker-toggle matSuffix [for]="pickerMax"></mat-datepicker-toggle>
+        <mat-datepicker #pickerMax></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    @if (data.showError) {
+    <mat-error>{{data.msgError}}</mat-error>
+    }
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button (click)="onClick()">Ok</button>
+</div>

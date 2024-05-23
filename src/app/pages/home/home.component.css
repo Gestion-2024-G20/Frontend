@@ -8,12 +8,10 @@ table{
 
 .buttons{
     display: flex;
-    justify-content: left;
+    justify-content: center;
     gap: 10px;
 }
 
-.content{
-    max-width: 60%;
-    min-width: fit-content;
+.home-content{
     margin-top: 40px;
 }
