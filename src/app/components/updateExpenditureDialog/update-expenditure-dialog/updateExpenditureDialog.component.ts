@@ -1,23 +1,21 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import {MatSelectModule} from '@angular/material/select';
-
+import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../services/user.service';
+import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { Category } from '../../../classes/category';
-import { ExpenditureService } from '../../services/expenditure.service';
-import { ExpenditureShareService } from '../../services/expenditureShare.service';
-import { CategoryShareService } from '../../services/categoryShare.service';
-import { CategoryShare } from '../../../classes/categoryShare';
-import { lastValueFrom, share } from 'rxjs';
-import { ExpenditureShare } from '../../../classes/expenditureShare';
-import { Expenditure } from '../../../classes/expenditure';
-export interface AddExpenditureDialogData {
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { ExpenditureService } from '../../../services/expenditure.service';
+import { ExpenditureShareService } from '../../../services/expenditureShare.service';
+import { CategoryShareService } from '../../../services/categoryShare.service';
+import { Expenditure } from '../../../../classes/expenditure';
+import { Category } from '../../../../classes/category';
+import { lastValueFrom } from 'rxjs';
+import { ExpenditureShare } from '../../../../classes/expenditureShare';
+import { CategoryShare } from '../../../../classes/categoryShare';
+export interface UpdateExpenditureDialogData {
   value: string; 
   amountString: string;
   amount: number;
@@ -30,24 +28,24 @@ export interface AddExpenditureDialogData {
   msgCategorySelectError: string; 
   showDescriptionError: boolean;
   msgDescriptionError: string;  
+  expenditure: Expenditure;
   userIdRequestor: number;
   groupId: number;
 }
 @Component({
-  selector: 'addExpenditureDialog.component',
-  templateUrl: 'addExpenditureDialog.component.html',
+  selector: 'updateExpenditureDialog.component',
+  templateUrl: 'updateExpenditureDialog.component.html',
   standalone: true,
   imports: [MatDialogModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatOptionModule, MatSelectModule]
 })
-export class AddExpenditureDialogComponent {
+export class UpdateExpenditureDialogComponent {
   
   constructor(
     private expenditureService: ExpenditureService,
     private expenditureShareService: ExpenditureShareService,
     private categoryShareService: CategoryShareService,
-    public dialogRef: MatDialogRef<AddExpenditureDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddExpenditureDialogData) {}
-    
+    public dialogRef: MatDialogRef<UpdateExpenditureDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: UpdateExpenditureDialogData) {}
     onNoClick(): void {
       this.data.value = ""; 
       this.dialogRef.close();
