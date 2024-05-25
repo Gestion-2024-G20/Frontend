@@ -110,6 +110,7 @@ export class UpdateExpenditureDialogComponent {
         expenditure.description = this.data.description;  
         expenditure.id_user = this.data.userIdRequestor;  
         expenditure.id_group = this.data.groupId;  
+        expenditure.id_category = this.data.category_index;
         let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
 
 

@@ -9,7 +9,6 @@ import { Expenditure } from '../../../../classes/expenditure';
 import { ExpenditureService } from '../../../services/expenditure.service';
 import { ExpenditureShareService } from '../../../services/expenditureShare.service';
 import { lastValueFrom } from 'rxjs';
-import { ExpenditureShare } from '../../../../classes/expenditureShare';
 export interface DeleteExpenditureDialogData {
   title: string;
   content: string;
@@ -28,7 +27,6 @@ export class DeleteExpenditureDialogComponent {
   
   constructor(
     private expenditureService: ExpenditureService,
-    private expenditureShareService: ExpenditureShareService,
     public dialogRef: MatDialogRef<DeleteExpenditureDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DeleteExpenditureDialogData) {}
     
@@ -39,9 +37,7 @@ export class DeleteExpenditureDialogComponent {
     async onClick(): Promise<void> {
 
       try{
-      
-      let expenditureShareCreated = await lastValueFrom(this.expenditureShareService.deleteExpenditureSharesByExpenditureId(this.data.expenditureId)) as Array<ExpenditureShare>;
-      
+            
       let expenditureCreated = await lastValueFrom(this.expenditureService.deleteExpenditure(this.data.expenditureId)) as Expenditure;
 
       this.dialogRef.close("Ok");

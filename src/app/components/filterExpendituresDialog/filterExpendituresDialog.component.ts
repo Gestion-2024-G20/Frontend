@@ -23,6 +23,8 @@ export interface FilterExpendituresDialogData {
   id_member: number;
   min_date: Date;
   max_date: Date;
+  min_date_str: string;
+  max_date_str: string;
   msgError: string;  
   showError: boolean;
 }
@@ -52,9 +54,16 @@ export class FilterExpendituresDialogComponent {
         }
         const format = 'yyyy-MM-dd';
         const locale = 'en-US';
+        if (this.data.min_date){
+          this.data.min_date_str = formatDate(this.data.min_date, format, locale);
+        }
+
+        if (this.data.max_date){
+          this.data.max_date_str = formatDate(this.data.max_date, format, locale);
+        }
         this.dialogRef.close({id_user: this.data.id_member, id_category: this.data.id_category, 
-          min_date: formatDate(this.data.min_date, format, locale), 
-          max_date: formatDate(this.data.max_date, format, locale)}); 
+          min_date: this.data.min_date_str, 
+          max_date: this.data.max_date_str}); 
       } catch (e) {
         this.data.msgError = "Error filtrando los gastos";
         return; 
