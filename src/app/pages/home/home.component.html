@@ -1,66 +1,68 @@
-<div class="home-content content bg-primary-subtle rounded">
-    <section class="header-section">
-        <h2 class="title">Groups</h2>
-        <button class="btn btn-primary"  (click)="createGroup()">Create Group</button>
-    </section>
+<div class="container">
+    <div class="home-content content bg-primary-subtle rounded">
+        <section class="header-section">
+            <h2 class="title">Groups</h2>
+            <button class="btn btn-primary"  (click)="createGroup()">Create Group</button>
+        </section>
 
-    <!-- table -->
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Time Created</th>
-                <th>Role</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (group of userGroups; track $index) {
+        <!-- table -->
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <td (click)="enterGroup($index)">{{ group.id_group }}</td>
-                    <td (click)="enterGroup($index)">{{ group.name }}</td>
-                    <td (click)="enterGroup($index)">{{ group.time_created }}</td>
-                    <td>
-                        @if(userGroupsIsAdmin[$index]){
-                            Admin
-                        } @else {
-                            Member
-                        }
-                    </td>
-                    <td class="buttons col-md">
-                        <button class="btn btn-primary" [routerLink]="'/group/' + group.id_group">Ver</button>
-                        @if(userGroupsIsAdmin[$index]){
-                            <button class="btn btn-primary" (click)="editGroupName($index)" >Editar Nombre</button>
-                        }
-                        <button class="btn btn-danger" (click)="deleteGroup()" hidden >Borrar</button>
-                    </td>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Time Created</th>
+                    <th>Role</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @for (group of userGroups; track $index) {
+                    <tr>
+                        <td (click)="enterGroup($index)">{{ group.id_group }}</td>
+                        <td (click)="enterGroup($index)">{{ group.name }}</td>
+                        <td (click)="enterGroup($index)">{{ group.time_created }}</td>
+                        <td>
+                            @if(userGroupsIsAdmin[$index]){
+                                Admin
+                            } @else {
+                                Member
+                            }
+                        </td>
+                        <td class="buttons col-md">
+                            <button class="btn btn-primary" [routerLink]="'/group/' + group.id_group">Ver</button>
+                            @if(userGroupsIsAdmin[$index]){
+                                <button class="btn btn-primary" (click)="editGroupName($index)" >Editar Nombre</button>
+                            }
+                            <button class="btn btn-danger" (click)="deleteGroup()" hidden >Borrar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    <br>
-    <h2 class="title">Invitaciones</h2>
+        <br>
+        <h2 class="title">Invitaciones</h2>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Grupo</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (invitation of this.userInvitations; track $index) {
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <td>{{ invitation.id_group }}</td>
-                    <td class="buttons col-md">
-                        <button class="btn btn-success" (click)="acceptInvitation(invitation.id_invitation)">Aceptar</button>
-                        <button class="btn btn-danger" (click)="rejectInvitation(invitation.id_invitation)">Cancelar</button>
-                    </td>
+                    <th>Grupo</th>
+                    <th>Acción</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @for (invitation of this.userInvitations; track $index) {
+                    <tr>
+                        <td>{{ invitation.id_group }}</td>
+                        <td class="buttons col-md">
+                            <button class="btn btn-success" (click)="acceptInvitation(invitation.id_invitation)">Aceptar</button>
+                            <button class="btn btn-danger" (click)="rejectInvitation(invitation.id_invitation)">Cancelar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 

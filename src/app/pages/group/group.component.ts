@@ -38,6 +38,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { InvitationListDialogComponent } from '../../components/invitation-list-dialog/invitation-list-dialog.component';
 import { Invitation } from '../../../classes/invitation';
 import { InvitationService } from '../../services/invitation.service';
+import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -191,62 +192,35 @@ export class GroupComponent implements OnInit {
   }
 
 
-  async createCategory(formData: any): Promise<void> {
+  async createCategory(): Promise<void> {
     try {
 
-      let total_percentage = 0;
-      // Obtengo datos para las categoryShares
-      const newCategoryName = formData.newCategoryName;
-      if (newCategoryName === "") {
-        this.snackBarService.open("El nombre de la categoría no puede estar vacío", 'info');
+      if (this.totalmembers.length < 1){
+        this.snackBarService.open('Must have more than 1 member', 'error');
         return;
       }
-      const newCategoryDescription = formData.newCategoryDescription;
-      if (newCategoryDescription === "") {
-        this.snackBarService.open("La descripción de la categoría no puede estar vacía", 'info');
-        return;
-      }
-      let newCategoryShares: Array<CategoryShare> = new Array<CategoryShare>;
-      for (const key in formData) {
-        if (!key.startsWith("percentage")) {
-          continue;
-        }
-        const id_user = Number(key.replace("percentage", ""));
-        
-        let categoryShare = new CategoryShare();
-        categoryShare.id_cs = 0; // se setea pero no se usa. Se genera uno nuevo en la base de datos. 
-        categoryShare.id_user = id_user;
-        categoryShare.share_percentage = Number(formData[key]);
-        total_percentage += categoryShare.share_percentage;
-        newCategoryShares.push(categoryShare as CategoryShare);
-      }
+      
+      let dialogRef = this.dialog.open(AddCategoryDialogComponent, {
+        width: '25%',
+        data: {showError: false, msgError: "", groupId: this.id_group, totalMembers: this.totalmembers}
+      });
 
-      if (total_percentage !== 100) {
-        this.snackBarService.open("El porcentaje total debe ser 100%", 'info');
+      let categoryDialogResponse = await lastValueFrom(dialogRef.afterClosed());
+
+      // Aca se entra si toco "No thanks"
+      if (!categoryDialogResponse){
         return;
       }
 
-      // Creo la Category
-      const newCategory = new Category();
-      newCategory.name = newCategoryName;
-      newCategory.description = newCategoryDescription;
-      newCategory.id_group = this.id_group;
-      let createdCategory = await lastValueFrom(this.categoryService.createCategory(newCategory)) as Category;
-      console.log(newCategoryShares); 
-      // Creo los CategoryShares
-      for (const cs of newCategoryShares){
-        cs.id_category = createdCategory.id_category; 
-        await lastValueFrom(this.categoryShareService.createCategoryShare(cs as CategoryShare)) as CategoryShare;
-      }
 
       this.snackBarService.open('Category created', 'success');
       // Refresco la lista de categorias
       await this.refreshData();
 
-      } catch (error) {
-        console.log("Entré al catch de createCategory!");
-        this.snackBarService.open('' + error, 'error');
-      }
+    } catch (error) {
+      console.log("Entré al catch de createCategory!");
+      this.snackBarService.open('' + error, 'error');
+    }
   }
 
   async deleteCategory(category: Category): Promise<void> {

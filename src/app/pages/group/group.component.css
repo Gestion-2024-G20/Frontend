@@ -24,3 +24,7 @@ mat-accordion{
 mat-panel-title i{
     margin-right: 10px;
 }
+
+.container{
+    max-width: 50%;
+}

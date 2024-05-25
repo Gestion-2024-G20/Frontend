@@ -15,3 +15,8 @@ table{
 .home-content{
     margin-top: 40px;
 }
+
+
+.container{
+    max-width: 70%;
+}
