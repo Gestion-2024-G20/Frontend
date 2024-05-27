@@ -114,6 +114,9 @@ export class AddCategoryDialogComponent {
           cs.id_category = createdCategory.id_category; 
           await lastValueFrom(this.categoryShareService.createCategoryShare(cs as CategoryShare)) as CategoryShare;
         }
+
+        //Necesito retornar la categoría creada
+        this.dialogRef.close( createdCategory );
       } catch (e) {
         this.data.showError = true;
         this.data.msgError = "Error creating category: " + e;

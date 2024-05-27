@@ -205,9 +205,10 @@ export class GroupComponent implements OnInit {
         data: {showError: false, msgError: "", groupId: this.id_group, totalMembers: this.totalmembers}
       });
 
+      // categoryDialogResponse va a tener un valor retornado por el dialogRef.close(returnParams) de AddCategoryDialogComponent
       let categoryDialogResponse = await lastValueFrom(dialogRef.afterClosed());
 
-      // Aca se entra si toco "No thanks"
+      // Aca se entra si toco "No thanks", lo que significa que se cerró el dialog sin parámetros
       if (!categoryDialogResponse){
         return;
       }
@@ -229,7 +230,9 @@ export class GroupComponent implements OnInit {
         width: '250px',
         data: {title: "Delete category", content: "Are you sure you want to delete this category?"}
       });
+
       const response = await lastValueFrom(dialogRef.afterClosed());
+      //Si la respuesta es nula, entonces es porque cerré el dialog sin parámetros
       if (!response){
         return;
       }
@@ -325,6 +328,8 @@ export class GroupComponent implements OnInit {
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(index, this.id_group)) as [GroupMember];
     console.log(groupMemberDeleteArray[0]);
     let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
+    //Acá debería actualizar los porcentajes de las categorías donde el usuario era miembro
+
     console.log(groupMemberDelete);
     this.snackBarService.open('User deleted', 'success');
     await this.refreshData();
