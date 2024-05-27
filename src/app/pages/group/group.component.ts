@@ -5,13 +5,11 @@ import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
 import { lastValueFrom } from 'rxjs';
 import { GroupMemberService } from '../../services/groupMembers.service';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { User } from '../../../classes/user';
 import { UserService } from '../../services/user.service';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../../classes/category';
-import { CategoryShare } from '../../../classes/categoryShare';
 import { GroupMember } from '../../../classes/groupMember';
 import { SnackbarService } from '../../services/snackbar.service';
 import { AddUserDialogComponent } from '../../components/addUserDialog/adduserDialog.component';
@@ -20,6 +18,7 @@ import { AuthService } from '../../services/auth.service';
 import { DeleteMemberDialogComponent } from '../../components/deleteMemberDialog/deleteMemberDialog.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatIconModule} from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import {MatDialogModule} from '@angular/material/dialog';
 import { MatTableModule, MatTableDataSource  } from '@angular/material/table';
 import { MatCard } from '@angular/material/card';
@@ -39,6 +38,8 @@ import { InvitationListDialogComponent } from '../../components/invitation-list-
 import { Invitation } from '../../../classes/invitation';
 import { InvitationService } from '../../services/invitation.service';
 import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
+import { TotalBalances } from '../../../classes/totalBalances';
+import { BalanceService } from '../../services/balance.service';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -72,7 +73,7 @@ export class GroupComponent implements OnInit {
   public userGroupsIsAdmin: Array<boolean> = [];
   private id_group: number = -1;
 
-  public loggedUserId: number = -1;
+  public loggedUserId: number = this.authService.loggedUserId();
   public isAdmin: boolean = false;
 
   public group: Group = new Group();
@@ -90,11 +91,14 @@ export class GroupComponent implements OnInit {
 
   public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
+  public balances: TotalBalances = new TotalBalances; 
+
   constructor(
     private userService: UserService,
     private groupService: GroupService, 
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
+    private balanceService: BalanceService,
     private expenditureService: ExpenditureService,
     private categoryShareService: CategoryShareService,
     private authService: AuthService, 
@@ -173,11 +177,23 @@ export class GroupComponent implements OnInit {
       this.snackBarService.open("getExpenditures error: " + error, 'error');
     }
   }
+
+  async getBalanceData(): Promise<void> {
+    // Get balance data
+    try {
+      this.balances = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+    } catch (error) {
+      // TODO: handle error
+      this.snackBarService.open("get Balance error: " + error, 'error');
+    }
+  }
+
   async refreshData(): Promise<void> {
     await this.getGroupData();
     await this.getMembersData();
     await this.getCategoriesData();
     await this.getExpendituresData();
+    await this.getBalanceData();
   }
 
   async ngOnInit(): Promise<void> {
