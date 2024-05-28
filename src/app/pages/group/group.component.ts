@@ -40,6 +40,8 @@ import { InvitationService } from '../../services/invitation.service';
 import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
 import { TotalBalances } from '../../../classes/totalBalances';
 import { BalanceService } from '../../services/balance.service';
+import { RequestService } from '../../services/request.service';
+import { Request } from '../../../classes/request';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -106,7 +108,9 @@ export class GroupComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     public dialog: MatDialog,
-    private invitationService: InvitationService
+    private invitationService: InvitationService,
+    private requestService: RequestService
+
   ) { }
   
   async getGroupData(): Promise<void> {
@@ -327,7 +331,30 @@ export class GroupComponent implements OnInit {
     this.snackBarService.open('An invitation has been sent to user ' + user[0].username + '', 'success');
 
     await this.refreshData();
+  }
 
+  async createRequestUrl(): Promise<void>{
+    const token =  this.generateRandomToken(50);
+    let url = window.location.href + "/join/" + token;
+    const request: Request = {
+      id_request: 0,
+      id_group: this.id_group,
+      token
+    }
+    this.requestService.createRequest(request);
+  }
+
+  generateRandomToken(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+  
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charactersLength);
+      result += characters.charAt(randomIndex);
+    }
+  
+    return result;
   }
 
   async deleteUser(index:number): Promise<void> {

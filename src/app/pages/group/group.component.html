@@ -52,6 +52,7 @@
                     </table>
                     <section class="buttons">
                         @if (this.isAdmin){
+                            <button class="btn btn-primary" type="button" (click)="createRequestUrl()"><mat-icon>link</mat-icon>Obtener link de invitación</button>
                             <button class="btn btn-primary" type="button" (click)="addUser()">Invitar usuario</button>
                             <button class="btn btn-primary" type="button" (click)="listadoInvitados()">Ver invitados</button>
                         }
