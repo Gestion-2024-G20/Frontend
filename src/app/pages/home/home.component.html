@@ -1,8 +1,8 @@
 <div class="container">
     <div class="home-content content bg-primary-subtle rounded">
         <section class="header-section">
-            <h2 class="title">Groups</h2>
-            <button class="btn btn-primary"  (click)="createGroup()">Create Group</button>
+            <h2 class="title">Grupos</h2>
+            <button class="btn btn-primary"  (click)="createGroup()">Crear Grupo</button>
         </section>
 
         <!-- table -->
@@ -10,10 +10,10 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Name</th>
-                    <th>Time Created</th>
-                    <th>Role</th>
-                    <th>Actions</th>
+                    <th>Nombre</th>
+                    <th>Creación</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +58,28 @@
                         <td class="buttons col-md">
                             <button class="btn btn-success" (click)="acceptInvitation(invitation.id_invitation)">Aceptar</button>
                             <button class="btn btn-danger" (click)="rejectInvitation(invitation.id_invitation)">Cancelar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <br>
+        <h2 class="title">Solicitudes pendientes</h2>
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Grupo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (invitation of this.userRequests; track $index) {
+                    <tr>
+                        <td>{{ invitation.id_group }}</td>
+                        <td class="buttons col-md">
+                            <button class="btn btn-danger" (click)="cancelRequest(invitation.id_invitation)">Cancelar</button>
                         </td>
                     </tr>
                 }
