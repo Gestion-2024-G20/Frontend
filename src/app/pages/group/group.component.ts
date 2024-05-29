@@ -97,6 +97,8 @@ export class GroupComponent implements OnInit {
   public balancesUserLogged: TotalBalances = new TotalBalances; 
   public balances: Array<TotalBalances> = new Array<TotalBalances>; 
 
+  public totalToPay: number = 0;
+  public totalToReceive: number = 0;
   invitationUrl: string = '';
 
   constructor(
@@ -189,7 +191,17 @@ export class GroupComponent implements OnInit {
   async getBalanceData(): Promise<void> {
     // Get balance data
     try {
+      this.totalToPay = 0; 
+      this.totalToReceive = 0; 
       this.balancesUserLogged = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+      
+      for (const balance of this.balancesUserLogged.to_pay) {
+        this.totalToPay += balance.amount;
+      }
+      for (const balance of this.balancesUserLogged.to_receive) {
+        this.totalToReceive += balance.amount;
+      }
+
       for (let i = 0; i < this.totalmembers.length; i++) {
         const balances_obtained = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.totalmembers[i].id_user)) as TotalBalances;
         this.balances.push(balances_obtained);
