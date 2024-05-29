@@ -124,4 +124,22 @@ getRequestsByGroupId(groupId: number): Observable<Array<Invitation>|null> {
     );
 }
 
+sendRequest(request: Request, userId: number): Observable<any|null> {    
+    const data = {request, userId}
+    return this.http.post<ResponseModel<Invitation>>(`${environment.apiUrl}/requests/join/${userId}`, request)
+    .pipe(
+        map(response => {
+            if (response && response.message === "OK" && response.dataModel) {
+                return response.dataModel;
+            } else if (response && response.message === "ERROR") {
+                throw new Error(response.detail);
+            } else {
+                throw new Error('Failed to deserialize response or invalid data received');
+            }
+        }),
+        catchError(error => {
+            return throwError(() => new Error('Failed to send request: ' + error.message));
+        })
+    );
+  }
 }

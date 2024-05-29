@@ -96,6 +96,8 @@ export class GroupComponent implements OnInit {
 
   public balances: TotalBalances = new TotalBalances; 
 
+  invitationUrl: string = '';
+
   constructor(
     private userService: UserService,
     private groupService: GroupService, 
@@ -337,13 +339,20 @@ export class GroupComponent implements OnInit {
 
   async createRequestUrl(): Promise<void>{
     const token =  this.generateRandomToken(50);
-    let url = window.location.href + "/request/" + this.id_group + "/" + token;
+    let url = "http://localhost:4200/request/" + this.id_group + "/" + token;
+    this.invitationUrl = url;
+
     const request: Request = {
       id_request: 0,
       id_group: this.id_group,
-      token
+      token,
+      time_created: ''
     }
-    this.requestService.createRequest(request);
+    const createdRequest = await lastValueFrom(this.requestService.createRequest(request)) as Request;
+    if (!createdRequest) {
+      this.snackBarService.open('Could not create the url', 'error');
+    }
+    this.snackBarService.open('Request url created!', 'success');
   }
 
   generateRandomToken(length: number): string {
@@ -480,7 +489,6 @@ export class GroupComponent implements OnInit {
 
     await this.refreshData();
   }
-
 
   goTo(){
     //this.router.navigate(['/group/config/' + this.userGroups[index].id_group]);

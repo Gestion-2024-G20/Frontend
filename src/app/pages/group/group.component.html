@@ -58,6 +58,9 @@
                             <button class="btn btn-primary" type="button" (click)="listadoSolicitudes()">Ver solicitudes</button>
                         }
                     </section>
+                    @if (this.isAdmin && invitationUrl){
+                        Copy link to invite members: {{this.invitationUrl}}
+                    }
                 </div>
             </mat-expansion-panel>
 
