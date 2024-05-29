@@ -50,8 +50,8 @@ export class ExpenditureShareService {
       );
   }
 
-  getExpenditureShareById(expenditureShareId: number): Observable<ExpenditureShare|null> {
-    return this.http.get<ResponseModel<ExpenditureShare>>(`${environment.apiUrl}/expenditure-shares/` + String(expenditureShareId))
+  getExpenditureShareByIdExpenditure(expenditureId: number): Observable<Array<ExpenditureShare>|null> {
+    return this.http.get<ResponseModel<Array<ExpenditureShare>>>(`${environment.apiUrl}/expenditure-shares/` + String(expenditureId))
       .pipe(
         map(response => {
           if (response && response.message === "OK" && response.dataModel) {
