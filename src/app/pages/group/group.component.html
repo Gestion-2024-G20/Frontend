@@ -2,18 +2,36 @@
     <div class="content">
         <section class="header-section">
             <h2 class="title"> {{ this.group.name }}</h2>
-
             <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>
         </section>
-        <section  *ngIf="this.balances.to_pay.length > 0 || this.balances.to_receive.length > 0" class="balances">
-            @for (balance of this.balances.to_pay; track $index) {
+        <p> {{ this.group.description }}</p>
+        <section  *ngIf="this.balancesUserLogged.to_pay.length > 0 || this.balancesUserLogged.to_receive.length > 0" class="balances">
+            @for (balance of this.balancesUserLogged.to_pay; track $index) {
                 <span > le debes a {{ balance.username }}: </span><p class="text-danger">${{balance.amount}}</p>
             }
-            @for (balance of this.balances.to_receive; track $index) {
+            @for (balance of this.balancesUserLogged.to_receive; track $index) {
                 <span > {{ balance.username }} te debe: </span><p class="text-success">${{balance.amount}}</p>
             }
         </section>
         <mat-accordion multi>
+        <mat-expansion-panel  *ngIf="this.balances.length > 0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <h5><i class="fa fa-users" aria-hidden="true"></i> SALDOS</h5>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
+                    @for (member of this.totalmembers;track $index) {
+                        <h6> SALDO {{member.username}} </h6>
+                        @for (b of this.balances[$index].to_pay; track b.id_user) {
+                            <span > {{member.username}} le debe a {{ b.username }}: </span><p class="text-danger">${{b.amount}}</p>
+                        }
+                        @for (b of this.balances[$index].to_receive; track b.id_user) {
+                            <span > {{ b.username }} le debe a {{member.username}} : </span><p class="text-success">${{b.amount}}</p>
+                        }
+                    }
+                </div>
+            </mat-expansion-panel>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>

@@ -94,7 +94,8 @@ export class GroupComponent implements OnInit {
 
   public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
-  public balances: TotalBalances = new TotalBalances; 
+  public balancesUserLogged: TotalBalances = new TotalBalances; 
+  public balances: Array<TotalBalances> = new Array<TotalBalances>; 
 
   invitationUrl: string = '';
 
@@ -188,7 +189,11 @@ export class GroupComponent implements OnInit {
   async getBalanceData(): Promise<void> {
     // Get balance data
     try {
-      this.balances = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+      this.balancesUserLogged = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+      for (let i = 0; i < this.totalmembers.length; i++) {
+        const balances_obtained = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.totalmembers[i].id_user)) as TotalBalances;
+        this.balances.push(balances_obtained);
+      }
     } catch (error) {
       // TODO: handle error
       this.snackBarService.open("get Balance error: " + error, 'error');
@@ -381,13 +386,19 @@ export class GroupComponent implements OnInit {
 
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(index, this.id_group)) as [GroupMember];
     console.log(groupMemberDeleteArray[0]);
-    let groupMemberDelete = await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
-    //Acá debería actualizar los porcentajes de las categorías donde el usuario era miembro
 
-    console.log(groupMemberDelete);
-    this.snackBarService.open('User deleted', 'success');
-    await this.refreshData();
-
+    let balanceUsuarioABorrar = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, index)) as TotalBalances;
+    console.log(balanceUsuarioABorrar);
+    //Chequeo que el usuario a borrar no tenga deudas con nadie ni nadie le deba nada
+    if(balanceUsuarioABorrar.to_pay.length === 0  && balanceUsuarioABorrar.to_receive.length === 0){
+      await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
+      this.snackBarService.open('User deleted', 'success');
+      await this.refreshData();
+      return;
+    }
+      
+    //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
+    this.snackBarService.open('User has pending balances', 'error');    
   }
 
   async createExpenditure() : Promise<void> {
@@ -436,6 +447,7 @@ export class GroupComponent implements OnInit {
     if (!rsp){
       return;
     }
+    await this.refreshData();
   }
   async listadoInvitados(): Promise<void> {
     let dialogRef = this.dialog.open(InvitationListDialogComponent, {
@@ -467,6 +479,14 @@ export class GroupComponent implements OnInit {
 
   async leaveGroup(): Promise<void> {
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
+    //Acá tengo que chequear que no tenga deudas pendientes
+    let balanceUsuarioABorrar = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+    if(balanceUsuarioABorrar.to_pay.length !== 0  || balanceUsuarioABorrar.to_receive.length !== 0){
+      //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
+      this.snackBarService.open('Your balance is pending! You need to pay your debts or either receive some money', 'error');
+      return;
+    }
+
     await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
     this.snackBarService.open('You left the group', 'success');
     await this.refreshData();

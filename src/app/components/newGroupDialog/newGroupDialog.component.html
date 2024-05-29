@@ -4,6 +4,10 @@
   <mat-form-field>
     <input matInput [(ngModel)]="data.value" cdkFocusInitial>
   </mat-form-field>
+  <p>Insert description</p>
+  <mat-form-field>
+    <input matInput [(ngModel)]="data.description" cdkFocusInitial>
+  </mat-form-field>
   @if (data.showError) {
     <mat-error 
     >{{data.msgError}}</mat-error>
