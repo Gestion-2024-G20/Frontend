@@ -19,6 +19,7 @@ export interface NewGroupDialogData {
   showError: boolean;
   msgError: string;  
   id_user_logged: number;
+  description: string;
 }
 @Component({
   selector: 'newGroupDialog.component',
@@ -47,6 +48,7 @@ export class NewGroupDialogComponent {
       }
       const group = new Group();
       group.name = this.data.value; 
+      group.description = this.data.description;
       // Creo un nuevo grupo
       const groupCreated = await lastValueFrom(this.groupService.postGroup(group)) as Group;
       const groupMember = new GroupMember();
