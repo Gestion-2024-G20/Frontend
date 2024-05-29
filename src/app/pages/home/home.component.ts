@@ -16,6 +16,7 @@ import { ChangeGroupNameDialogComponent } from '../../components/changeGroupName
 import { NewGroupDialogComponent } from '../../components/newGroupDialog/newGroupDialog.component';
 import { Invitation } from '../../../classes/invitation';
 import { InvitationService } from '../../services/invitation.service';
+import { RequestService } from '../../services/request.service';
 
 @Component({
   selector: 'app-home',
@@ -35,7 +36,8 @@ export class HomeComponent implements OnInit {
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
   public groupName: string = "";
-  public userInvitations: Array<Invitation> = []; 
+  public userInvitations: Array<Invitation> = [];
+  public userRequests: Array<Invitation> = []; 
 
   constructor(
     private groupService: GroupService, 
@@ -44,7 +46,8 @@ export class HomeComponent implements OnInit {
     private snackBarService: SnackbarService, 
     public dialog: MatDialog, 
     private router: Router,
-    private invitationService: InvitationService
+    private invitationService: InvitationService,
+    private requestService: RequestService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -56,10 +59,16 @@ export class HomeComponent implements OnInit {
 
   async refreshInvitations() {
     this.userInvitations = [];
+    this.userRequests = [];
     let userInvitations = await lastValueFrom(this.invitationService.getInvitationsByUserId(this.authService.loggedUserId())) as Array<Invitation> | null;
+    let userRequests = await lastValueFrom(this.requestService.getRequestsByUserId(this.authService.loggedUserId())) as Array<Invitation> | null;
     if (userInvitations) {
       this.userInvitations.push(...userInvitations);
     } 
+
+    if (userRequests) {
+      this.userRequests.push(...userRequests);
+    }
 
     return this.userInvitations;
   }
@@ -141,6 +150,12 @@ export class HomeComponent implements OnInit {
   async rejectInvitation(index:number): Promise<void> {
     await lastValueFrom(this.invitationService.deleteInvitation(index));
     this.snackBarService.open('Invitation rejected', 'success');
+    this.refreshInvitations();
+  }
+
+  async cancelRequest(index:number): Promise<void> {
+    await lastValueFrom(this.invitationService.deleteInvitation(index));
+    this.snackBarService.open('Solicitud cancelada', 'success');
     this.refreshInvitations();
   }
 

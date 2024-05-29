@@ -70,6 +70,24 @@ getRequestByUserIdGroupId(userId: number, groupId: number): Observable<Invitatio
     );
 }
 
+getRequestsByUserId(userId: number): Observable<Array<Invitation>|null> {
+    return this.http.get<ResponseModel<Array<Invitation>>>(`${environment.apiUrl}/user/${userId}/userGroupInvitations?requested=true`)
+    .pipe(
+        map(response => {
+            if (response && response.message === "OK" && response.dataModel) {
+                return response.dataModel;
+            } else if (response && response.message === "NOT FOUND") {
+                return null;
+            } else {
+                throw new Error('Failed to deserialize response or invalid data received');
+            }
+        }),
+        catchError(error => {
+            return throwError(() => new Error('Failed to fetch invitations: ' + error.message));
+        })
+    );
+}
+
 deleteRequest(idInvitacion: number): Observable<Invitation|null> {
     return this.http.delete<ResponseModel<Invitation>>(`${environment.apiUrl}/invitations/borrar/${idInvitacion}`)
     .pipe(

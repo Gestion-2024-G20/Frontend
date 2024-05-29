@@ -16,7 +16,9 @@ table{
     margin-top: 40px;
 }
 
-
+th, td{
+    text-align: center;
+}
 .container{
-    max-width: 70%;
+    max-width: 80%;
 }
