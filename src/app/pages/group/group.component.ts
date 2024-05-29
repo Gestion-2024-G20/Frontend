@@ -398,6 +398,7 @@ export class GroupComponent implements OnInit {
     if (!rsp){
       return;
     }
+    await this.refreshData();
   }
   async listadoInvitados(): Promise<void> {
     let dialogRef = this.dialog.open(InvitationListDialogComponent, {

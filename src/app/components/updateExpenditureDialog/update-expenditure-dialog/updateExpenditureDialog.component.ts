@@ -106,13 +106,16 @@ export class UpdateExpenditureDialogComponent {
         }
         
         let expenditure = new Expenditure;
+        expenditure.id_expenditure = this.data.expenditure.id_expenditure;
         expenditure.amount = this.data.amount;  
         expenditure.description = this.data.description;  
         expenditure.id_user = this.data.userIdRequestor;  
         expenditure.id_group = this.data.groupId;  
-        expenditure.id_category = this.data.category_index;
-        let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
+        expenditure.id_category = this.data.categories[this.data.category_index].id_category
+        let expenditureCreated = await lastValueFrom(this.expenditureService.putExpenditure(expenditure)) as Expenditure;
 
+
+        await lastValueFrom(this.expenditureShareService.deleteExpenditureSharesByExpenditureId(expenditureCreated.id_expenditure))
 
         for (const es of expenditure_shares){
           es.id_expenditure = expenditureCreated.id_expenditure; 
