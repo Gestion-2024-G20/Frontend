@@ -42,6 +42,7 @@ import { TotalBalances } from '../../../classes/totalBalances';
 import { BalanceService } from '../../services/balance.service';
 import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
+import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -324,6 +325,7 @@ export class GroupComponent implements OnInit {
     invitation.id_user = user[0].id_user;
     invitation.id_group = this.id_group;
     invitation.status = "Pendiente";
+    invitation.is_request = false;
     const createdInvitation = await lastValueFrom(this.invitationService.createInvitation(invitation)) as Invitation;
     if (!createdInvitation) {
       this.snackBarService.open('Could not add user to group', 'error');
@@ -436,7 +438,21 @@ export class GroupComponent implements OnInit {
       return;
     }
 
-    this.snackBarService.open('Expenditure updated', 'success');
+    this.snackBarService.open('Invitations updated', 'success');
+    await this.refreshData();
+  }
+
+  async listadoSolicitudes(): Promise<void> {
+    let dialogRef = this.dialog.open(SolicitudesListDialogComponent, {
+      width: '500px', 
+      data: {id_group: this.id_group}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      return;
+    }
+
+    this.snackBarService.open('Requests updated', 'success');
     await this.refreshData();
   }
 
