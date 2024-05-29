@@ -470,6 +470,7 @@ export class GroupComponent implements OnInit {
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
     if (!rsp){
+      await this.refreshData();
       return;
     }
 

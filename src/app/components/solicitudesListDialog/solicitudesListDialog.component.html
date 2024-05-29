@@ -12,7 +12,8 @@
         <tr *ngFor="let user of users">
             <td>{{user.username}}</td>
             <td>
-                <button class="btn btn-danger" (click)="rejectRequest(user.id_user)">Rechazar solicitud</button>
+                <button class="btn btn-success" (click)="acceptRequest(user.id_user)">Aceptar</button>
+                <button class="btn btn-danger" (click)="rejectRequest(user.id_user)">Rechazar</button>
             </td>
         </tr>
   </table> 

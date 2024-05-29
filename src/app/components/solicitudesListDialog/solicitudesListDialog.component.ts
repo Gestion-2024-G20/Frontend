@@ -5,12 +5,17 @@ import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { InvitationService } from '../../services/invitation.service';
 import { Invitation } from '../../../classes/invitation';
 import { User } from '../../../classes/user';
 import { firstValueFrom } from 'rxjs';
 import { RequestService } from '../../services/request.service';
+import { GroupMember } from '../../../classes/groupMember';
+import { AuthService } from '../../services/auth.service';
+import { GroupMemberService } from '../../services/groupMembers.service';
+import { SnackbarService } from '../../services/snackbar.service';
 
 
 
@@ -27,8 +32,13 @@ export interface DialogData {
 })
 export class SolicitudesListDialogComponent implements OnInit {
   users: User[] | null;
+  
 
   constructor(private requestService: RequestService,
+    private authService: AuthService, 
+    private groupMemberService: GroupMemberService, 
+    private snackBarService: SnackbarService, 
+    private invitationService: InvitationService,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
     public dialogRef: MatDialogRef<SolicitudesListDialogComponent>
   ) {
@@ -45,6 +55,22 @@ export class SolicitudesListDialogComponent implements OnInit {
     console.log(this.users);
   }
 
+  async acceptRequest(id_user: number): Promise<void> {
+    let invitation = await firstValueFrom(this.requestService.getRequestByUserIdGroupId(id_user, this.data.id_group)) as Invitation;
+
+    const groupMember = new GroupMember();
+    groupMember.id_user = id_user;
+    groupMember.id_group = invitation.id_group;
+    groupMember.is_admin = false;
+    const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
+    if (!groupMemberCreated) {
+      this.snackBarService.open('Could not join group', 'error');
+      return;
+    }
+    this.snackBarService.open('Joined group', 'success');
+    await lastValueFrom(this.invitationService.deleteInvitation(invitation.id_invitation));
+    this.refreshData()
+  }
   async rejectRequest(id_user: number): Promise<void> {
 
     //Necesito buscar la invitación filtrada por el id_user y por el id_group
