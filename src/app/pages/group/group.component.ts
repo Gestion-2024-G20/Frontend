@@ -335,7 +335,7 @@ export class GroupComponent implements OnInit {
 
   async createRequestUrl(): Promise<void>{
     const token =  this.generateRandomToken(50);
-    let url = window.location.href + "/join/" + token;
+    let url = window.location.href + "/request/" + this.id_group + "/" + token;
     const request: Request = {
       id_request: 0,
       id_group: this.id_group,

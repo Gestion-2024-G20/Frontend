@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +22,7 @@ import { NgIf } from '@angular/common';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  navigationExtras: NavigationExtras | undefined;
   hidePassword = true; 
   hidePasswordRepeat = true; 
   registerForm = this.formBuilder.group(
@@ -49,7 +50,12 @@ export class RegisterComponent {
 
   submitted = false;
 
-  constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { }
+  constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { 
+    const navigation = this.router.getCurrentNavigation();
+		if (navigation && navigation.extras && navigation.extras.state) {
+			this.navigationExtras = navigation.extras;
+		}
+  }
 
   ngOnInit(): void {
 
@@ -69,7 +75,7 @@ export class RegisterComponent {
         values.email,
         values.cellphone 
       ).then(() => {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], this.navigationExtras);
       }); 
     } catch (error) {
       // todo show error db

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,13 +16,20 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  navigationExtras: NavigationExtras | undefined;
+
   form: FormGroup = new FormGroup({
     username: new FormControl(''),
     password: new FormControl(''),
   });
   submitted = false;
 
-  constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { }
+  constructor(private authService: AuthService, private formBuilder: FormBuilder, private router: Router) { 
+    const navigation = this.router.getCurrentNavigation();    
+		if (navigation && navigation.extras && navigation.extras.state) {
+			this.navigationExtras = navigation.extras;
+		}
+  }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group(
@@ -38,9 +45,12 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    console.log(this.form.value);
     let values = this.form.value;
-    this.authService.login(values.username, values.password); 
+
+    if (this.navigationExtras?.state){
+      let path = '/request/' + this.navigationExtras.state['groupId'] + '/' + this.navigationExtras.state['token'];
+      this.authService.login(values.username, values.password, [path]); 
+    } else this.authService.login(values.username, values.password); 
   }
 
 

@@ -11,6 +11,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/register/register.component').then((m) => m.RegisterComponent)
     },
     { 
+        path: 'request/:group_id/:token', 
+        loadComponent: () => import('./pages/request/request.component').then((m) => m.RequestComponent)
+    },
+    { 
         path: 'hello', 
         loadComponent: () => import('./hello/hello.component').then((m) => m.HelloComponent)
     },

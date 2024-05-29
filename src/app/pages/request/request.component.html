@@ -1,0 +1,20 @@
+<div class="request-content">
+  <mat-card>
+    <mat-card-title>Join group <span class="username">{{username}}</span>!</mat-card-title>
+    <ng-container *ngIf="userLoggedIn && userDetectedIsMember">
+      <p class="instructions">We detected an active session. You're already a member.</p>
+      <button mat-raised-button color="primary" type="submit" (click)="goTo('/group/' + this.groupId)">View Group Details</button>
+    </ng-container>
+    <ng-container *ngIf="userLoggedIn && !userDetectedIsMember">
+      <p class="instructions">We detected an active session. Want to join? Click 'Join Group' and an admin will review it.</p>
+      <button mat-raised-button color="primary" type="submit" (click)="sendRequest()">Join group</button>
+    </ng-container>
+    <ng-container *ngIf="!userLoggedIn">
+      <p class="instructions">You must be logged in to join a group. Log in or register to continue</p>
+      <section class="buttons">
+        <button mat-raised-button color="primary" type="submit" (click)="goTo('login')">Login</button>
+        <button mat-raised-button color="secondary" type="submit" (click)="goTo('register')">Register</button>
+      </section>
+    </ng-container>
+  </mat-card>
+</div>

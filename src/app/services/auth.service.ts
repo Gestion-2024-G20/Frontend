@@ -17,7 +17,7 @@ export class AuthService {
   totalAngularPackages: any;
   constructor(private router: Router, private http: HttpClient, private userService: UserService, private snackBarService: SnackbarService) { }
 
-  async login(username: string, password: string) {
+  async login(username: string, password: string, path: any = ['/home']) {
     try {
       const users: User[] | null = await lastValueFrom(this.userService.getUserByUsername(username));
       console.log(users)
@@ -37,7 +37,7 @@ export class AuthService {
       localStorage.setItem(LOGGEDIN, 'true');
       localStorage.setItem(USERID, String(user.id_user));
       localStorage.setItem(USERNAME, String(user.username))
-      this.router.navigate(['/home']);
+      this.router.navigate(path);
       return Promise.resolve();
     } catch (error) {
       console.error('Error occurred during login:', error);
@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   getUsername() {
-    return localStorage.getItem(USERNAME);
+    return localStorage.getItem(USERNAME) || '';
   }
 
   async register(
