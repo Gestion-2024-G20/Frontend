@@ -91,7 +91,8 @@ export class GroupComponent implements OnInit {
 
   public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
-  public balances: TotalBalances = new TotalBalances; 
+  public balancesUserLogged: TotalBalances = new TotalBalances; 
+  public balances: Array<TotalBalances> = new Array<TotalBalances>; 
 
   constructor(
     private userService: UserService,
@@ -181,7 +182,11 @@ export class GroupComponent implements OnInit {
   async getBalanceData(): Promise<void> {
     // Get balance data
     try {
-      this.balances = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+      this.balancesUserLogged = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
+      for (let i = 0; i < this.totalmembers.length; i++) {
+        const balances_obtained = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.totalmembers[i].id_user)) as TotalBalances;
+        this.balances.push(balances_obtained);
+      }
     } catch (error) {
       // TODO: handle error
       this.snackBarService.open("get Balance error: " + error, 'error');
