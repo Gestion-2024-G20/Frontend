@@ -236,7 +236,7 @@ export class GroupComponent implements OnInit {
     try {
 
       if (this.totalmembers.length < 1){
-        this.snackBarService.open('Must have more than 1 member', 'error');
+        this.snackBarService.open('Se deben tener más de un miembro', 'error');
         return;
       }
       
@@ -254,12 +254,11 @@ export class GroupComponent implements OnInit {
       }
 
 
-      this.snackBarService.open('Category created', 'success');
+      this.snackBarService.open('Categoría creada', 'success');
       // Refresco la lista de categorias
       await this.refreshData();
 
     } catch (error) {
-      console.log("Entré al catch de createCategory!");
       this.snackBarService.open('' + error, 'error');
     }
   }
@@ -268,7 +267,7 @@ export class GroupComponent implements OnInit {
     try {
       const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
         width: '250px',
-        data: {title: "Delete category", content: "Are you sure you want to delete this category?"}
+        data: {title: "Eliminar categoría", content: "Estás seguro que queres eliminar esta categoría?"}
       });
 
       const response = await lastValueFrom(dialogRef.afterClosed());
@@ -279,7 +278,7 @@ export class GroupComponent implements OnInit {
       await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
       await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
       
-      this.snackBarService.open('Category deleted', 'success');
+      this.snackBarService.open('Categoría eliminada', 'success');
       await this.refreshData();
     } catch (error) {
       this.snackBarService.open('' + error, 'error');
@@ -307,7 +306,7 @@ export class GroupComponent implements OnInit {
   async addUser() : Promise<void> {
     let dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '250px',
-      data: {title: "Invite user to group", content: "Insert a username ", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
+      data: {title: "Invitar usuario al grupo", content: "Username ", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
     });
     let username = await lastValueFrom(dialogRef.afterClosed());
     if (!username){
@@ -318,7 +317,7 @@ export class GroupComponent implements OnInit {
     //console.log("El nombre es" + username);
     const user = await lastValueFrom(this.userService.getUserByUsername(username)) as User[] | null;
     if (!user){
-      this.snackBarService.open('Username not found', 'info');
+      this.snackBarService.open('Username no encontrado', 'info');
       return;
     }
 
@@ -333,7 +332,7 @@ export class GroupComponent implements OnInit {
     if (invitaciones){
       for (const i of invitaciones){
         if (i.id_user === objetoUser.id_user){
-          this.snackBarService.open('An invitation has already been sent to this user', 'info');
+          this.snackBarService.open('Ya se envió una invitación al usuario', 'info');
           return;
         }
       }
@@ -347,9 +346,9 @@ export class GroupComponent implements OnInit {
     invitation.is_request = false;
     const createdInvitation = await lastValueFrom(this.invitationService.createInvitation(invitation)) as Invitation;
     if (!createdInvitation) {
-      this.snackBarService.open('Could not add user to group', 'error');
+      this.snackBarService.open('No se pudo añadir al usuario al grupo', 'error');
     }
-    this.snackBarService.open('An invitation has been sent to user ' + user[0].username + '', 'success');
+    this.snackBarService.open('Se envió una invitación al usuario: ' + user[0].username + '', 'success');
 
     await this.refreshData();
   }
@@ -367,9 +366,9 @@ export class GroupComponent implements OnInit {
     }
     const createdRequest = await lastValueFrom(this.requestService.createRequest(request)) as Request;
     if (!createdRequest) {
-      this.snackBarService.open('Could not create the url', 'error');
+      this.snackBarService.open('No se pudo crear el link', 'error');
     }
-    this.snackBarService.open('Request url created!', 'success');
+    this.snackBarService.open('Link de ingreso creado!', 'success');
   }
 
   generateRandomToken(length: number): string {
@@ -389,7 +388,7 @@ export class GroupComponent implements OnInit {
 
     const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
       width: '250px',
-      data: {title: "Delete member", content: "Are you sure you want to delete this member?"}
+      data: {title: "Eliminar miembro", content: "Estás seguro de querer eliminar este usuario?"}
     });
     const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
     if (!groupCreatedName){
@@ -404,13 +403,13 @@ export class GroupComponent implements OnInit {
     //Chequeo que el usuario a borrar no tenga deudas con nadie ni nadie le deba nada
     if(balanceUsuarioABorrar.to_pay.length === 0  && balanceUsuarioABorrar.to_receive.length === 0){
       await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
-      this.snackBarService.open('User deleted', 'success');
+      this.snackBarService.open('Usuario eliminado', 'success');
       await this.refreshData();
       return;
     }
       
     //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
-    this.snackBarService.open('User has pending balances', 'error');    
+    this.snackBarService.open('El usuario tiene balances pendientes', 'error');    
   }
 
   async createExpenditure() : Promise<void> {
@@ -422,7 +421,7 @@ export class GroupComponent implements OnInit {
     if (!rsp){
       return;
     }
-    this.snackBarService.open('Expenditure created', 'success');
+    this.snackBarService.open('Gasto creado', 'success');
 
     await this.refreshData();
   }
@@ -431,7 +430,7 @@ export class GroupComponent implements OnInit {
       console.log(expenditure);
       const dialogRef = this.dialog.open(DeleteExpenditureDialogComponent, {
         width: '250px',
-        data: {title: "Delete expenditure", content: "Are you sure you want to delete this expenditure?", expenditureId: expenditure.id_expenditure}
+        data: {title: "Eliminar gasto", content: "Estás seguro de querer eliminar el gasto?", expenditureId: expenditure.id_expenditure}
       });
       const response = await lastValueFrom(dialogRef.afterClosed());
       if (response && response != "Ok"){
@@ -442,7 +441,7 @@ export class GroupComponent implements OnInit {
         return;
       }
 
-      this.snackBarService.open('Expenditure deleted ', 'success');
+      this.snackBarService.open('Gasto eliminado ', 'success');
       await this.refreshData();
     }
     catch(error){
@@ -471,7 +470,7 @@ export class GroupComponent implements OnInit {
       return;
     }
 
-    this.snackBarService.open('Invitations updated', 'success');
+    this.snackBarService.open('Invitaciones actualizadas', 'success');
     await this.refreshData();
   }
 
@@ -486,7 +485,7 @@ export class GroupComponent implements OnInit {
       return;
     }
 
-    this.snackBarService.open('Requests updated', 'success');
+    this.snackBarService.open('Solicitudes actualizadas', 'success');
     await this.refreshData();
   }
 
@@ -496,12 +495,12 @@ export class GroupComponent implements OnInit {
     let balanceUsuarioABorrar = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
     if(balanceUsuarioABorrar.to_pay.length !== 0  || balanceUsuarioABorrar.to_receive.length !== 0){
       //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
-      this.snackBarService.open('Your balance is pending! You need to pay your debts or either receive some money', 'error');
+      this.snackBarService.open('Tenes saldos pendientes! Debes pagar tus deudas o recibir dinero.', 'error');
       return;
     }
 
     await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
-    this.snackBarService.open('You left the group', 'success');
+    this.snackBarService.open('Dejaste el grupo', 'success');
     await this.refreshData();
     this.router.navigate(['/home']);
   }

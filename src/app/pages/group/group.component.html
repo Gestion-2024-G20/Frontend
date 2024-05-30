@@ -58,7 +58,7 @@
 
                         <!-- Actions Column -->
                         <ng-container matColumnDef="actions">
-                            <th mat-header-cell *matHeaderCellDef> Actions </th>
+                            <th mat-header-cell *matHeaderCellDef> Acciones </th>
                             <td mat-cell *matCellDef="let element" [class.make-gold]='element.type == "admin"'>
                                 <button *ngIf="loggedUserId != element.id_user && isAdmin" type="button"
                                     class="btn btn-danger" (click)="deleteUser(element.id_user)">
