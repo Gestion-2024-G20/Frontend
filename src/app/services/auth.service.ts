@@ -82,6 +82,8 @@ export class AuthService {
       user.mail = email;
       user.celular = cellphone;
       user.username = username;
+      user.name = firstName;
+      user.lastname = lastName;
       await lastValueFrom(this.userService.postUser(user));
       this.snackBarService.open('Register success!', 'success');
       return Promise.resolve()

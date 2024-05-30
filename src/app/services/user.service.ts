@@ -30,6 +30,26 @@ getUsers(): Observable<Array<User>|null> {
     );
 }
 
+updateUser(user: User, id: number): Observable<User|null> {
+  console.log("Updating user: ", user, " with id: ", id);
+  
+  return this.http.put<ResponseModel<User>>(`${environment.apiUrl}/users/`+ id, user)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to update user: ' + error.message));
+      })
+    );
+}
+
 getUserByUsername(username: string): Observable<User[]|null> {
   return this.http.get<ResponseModel<User[]>>(`${environment.apiUrl}/users?username=` + username)
     .pipe(

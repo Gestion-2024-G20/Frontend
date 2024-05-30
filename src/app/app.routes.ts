@@ -35,7 +35,11 @@ export const routes: Routes = [
             {
                 path: 'group/config/:group_id',
                 loadComponent: () => import('./pages/group-config/group-config.component').then((m) => m.GroupConfigComponent),
-            },       
+            },    
+            {
+                path: 'profile',
+                loadComponent: () => import('./pages/profile/profile.component').then((m) => m.ProfileComponent),  
+            },   
         ]
 
     },
