@@ -8,5 +8,6 @@ export class User {
     token: string = "";
     mail: string = "";
     celular: string = "";
+    profile_image_name: string = "";
   
   }

@@ -1,43 +1,58 @@
 <div id="profile">
   <mat-card>
     <mat-card-title>Perfil</mat-card-title>
-  <form [formGroup]="profileForm">
-    <mat-form-field>
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" required>
-      <mat-error *ngIf="profileForm.get('username')!.hasError('required')">
-        Field required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="name" required>
-      <mat-error *ngIf="profileForm.get('name')!.hasError('required')">
-        Field required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Apellido</mat-label>
-      <input matInput formControlName="lastname" required>
-      <mat-error *ngIf="profileForm.get('lastname')!.hasError('required')">
-        Field required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Mail</mat-label>
-      <input matInput formControlName="email" required>
-      <mat-error *ngIf="profileForm.get('email')!.hasError('required')">
-        Field required
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Teléfono</mat-label>
-      <input matInput formControlName="telephone" required>
-      <mat-error *ngIf="profileForm.get('telephone')!.hasError('required')">
-        Field required
-      </mat-error>
-    </mat-form-field>
+    
+    <div class="profile-image">
+      <img
+        width="120"
+        height="120"
+        class="margin-top mat-elevation-z1"
+        [src]="profilePhotoURL || '/assets/images/image-placeholder.png'"
+      />
+      <input #inputField hidden type="file" (change)="actualizarFoto($event)" />
+      <button mat-mini-fab (click)="inputField.click()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    <input #inputField hidden type="file"  />
+    
+    <form [formGroup]="profileForm">
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" required>
+        <mat-error *ngIf="profileForm.get('username')!.hasError('required')">
+          Field required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="name" required>
+        <mat-error *ngIf="profileForm.get('name')!.hasError('required')">
+          Field required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Apellido</mat-label>
+        <input matInput formControlName="lastname" required>
+        <mat-error *ngIf="profileForm.get('lastname')!.hasError('required')">
+          Field required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Mail</mat-label>
+        <input matInput formControlName="email" required>
+        <mat-error *ngIf="profileForm.get('email')!.hasError('required')">
+          Field required
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telephone" required>
+        <mat-error *ngIf="profileForm.get('telephone')!.hasError('required')">
+          Field required
+        </mat-error>
+      </mat-form-field>
       <button mat-raised-button color="primary" (click)="updateProfile()">Actualizar</button>
-  </form>
-</mat-card>
+    </form>
+  </mat-card>
 </div>

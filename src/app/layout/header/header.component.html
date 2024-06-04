@@ -1,14 +1,30 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button type="button" (click)="toggleSidebar()">
+  <button mat-icon-button type="button" (click)="toggleSidebar()">
       <mat-icon>menu</mat-icon>
-    </button>
-    <span>Splitify</span>
-    <span class="spacer"></span>
-    <span class="username">{{ getUsername() }}</span>
-    <a mat-icon-button href="profile">
+  </button>
+  <span>Splitify</span>
+  <span class="spacer"></span>
+  <span class="username">{{ getUsername() }}</span>
+  <!-- <a mat-icon-button href="profile">
       <mat-icon>person</mat-icon>
-    </a>
-    <button mat-icon-button (click)="logout()">
-			<mat-icon>logout</mat-icon>
-		</button>
-  </mat-toolbar>
+  </a> -->
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="avatar-button">
+    <img
+      *ngIf="fotoPerfilURL"
+      [src]="fotoPerfilURL"
+      class="avatar-img"
+      alt="Avatar"
+    />
+    <mat-icon *ngIf="!fotoPerfilURL">person</mat-icon>
+  </button>
+  <button mat-icon-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-menu #menu="matMenu">
+  <a mat-menu-item href="/profile">
+      <mat-icon>settings</mat-icon>
+      <span>Configurar perfil</span>
+  </a>
+</mat-menu>

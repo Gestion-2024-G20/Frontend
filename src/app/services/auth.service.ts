@@ -84,6 +84,7 @@ export class AuthService {
       user.username = username;
       user.name = firstName;
       user.lastname = lastName;
+      user.profile_image_name = "";
       await lastValueFrom(this.userService.postUser(user));
       this.snackBarService.open('Register success!', 'success');
       return Promise.resolve()

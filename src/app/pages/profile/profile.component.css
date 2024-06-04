@@ -47,3 +47,15 @@ mat-error {
 mat-icon {
     vertical-align: middle;
 }
+
+.profile-image img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+  
+.profile-image img:hover {
+    transform: scale(1.1);
+}
