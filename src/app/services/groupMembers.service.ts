@@ -105,4 +105,23 @@ deleteGroupMember(groupMember: GroupMember): Observable<GroupMember|null> {
     );
 }
 
+putGroupMember(groupMember: GroupMember): Observable<GroupMember|null> {
+  return this.http.put<ResponseModel<GroupMember>>(`${environment.apiUrl}/groupMembers/` + groupMember.id_gm, groupMember)
+    .pipe(
+      map(response => {
+        console.log(response)
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to put groupMember: ' + error.message));
+      })
+    );
+}
+
 }

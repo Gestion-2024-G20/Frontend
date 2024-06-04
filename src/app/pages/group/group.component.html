@@ -64,6 +64,11 @@
                                     class="btn btn-danger" (click)="deleteUser(element.id_user)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
+                                <button *ngIf="loggedUserId != element.id_user && isAdmin" type="button"
+                                    class="btn btn-primary" (click)="delegateAdmin(element.id_user)">
+                                    <mat-icon>supervisor_account_circle</mat-icon>
+                                </button>
+                                
                             </td>
                         </ng-container>
 
