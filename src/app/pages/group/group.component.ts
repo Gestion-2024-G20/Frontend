@@ -47,6 +47,7 @@ export interface MembersTableElement {
   id_user: number; 
   username: string;
   type: string;
+  profilePhoto_filename: string;
 }
 @Component({
   selector: 'app-home',
@@ -138,13 +139,14 @@ export class GroupComponent implements OnInit {
       this.admins = new Array<User>;
       this.members = new Array<User>;
       for (const member of this.groupMembers) {
-        let elm : MembersTableElement = {id_user: 0, username: "", type: ""};
+        let elm : MembersTableElement = {id_user: 0, username: "", type: "", profilePhoto_filename: ""};
         const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
         if (!user){
           throw Error("group member not found");
         }
         elm.id_user = user.id_user;
         elm.username = user.username; 
+        elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
         if (member.is_admin) {
           if (member.id_user == this.loggedUserId)
             this.isAdmin = true;

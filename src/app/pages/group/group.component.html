@@ -45,9 +45,18 @@
                         <!-- Username Column -->
                         <ng-container matColumnDef="username">
                             <th mat-header-cell *matHeaderCellDef> Username </th>
-                            <td mat-cell *matCellDef="let element" [class.make-gold]='element.type == "admin"'>
-                                {{element.username}} </td>
+                            <td mat-cell *matCellDef="let element">
+                                <img
+                                    *ngIf="element.profilePhoto_filename"
+                                    [src]="'/assets/images/' + element.profilePhoto_filename"
+                                    class="avatar-img"
+                                    alt="Avatar"
+                                    style="width:30px;height:30px;"
+                                />
+                                <mat-icon *ngIf="!element.profilePhoto_filename">person</mat-icon>
+                                {{element.username}}</td>
                         </ng-container>
+                    
 
                         <!-- Tipo Column -->
                         <ng-container matColumnDef="type">
