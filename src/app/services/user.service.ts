@@ -104,6 +104,42 @@ postUser(user: User): Observable<User|null> {
     );
 }
 
+updateProfilePhoto(fileName: string,idUser: number): Observable<User|null> {
+  return this.http.put<ResponseModel<User>>(`${environment.apiUrl}/users/${idUser}/profile-picture`, { fileName})
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to update profile picture: ' + error.message));
+      })
+    );
+}
+
+getProfilePhotoURL(idUser: number): Observable<string|null> {
+  return this.http.get<ResponseModel<string>>(`${environment.apiUrl}/users/${idUser}/profile-picture`)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to fetch profile picture: ' + error.message));
+      })
+    );
+}
+
 getHelloMessage(): Observable<any> {
   return this.http.get<any>(`${environment.apiUrl}/hello`);
 }
