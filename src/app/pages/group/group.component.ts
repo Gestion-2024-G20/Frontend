@@ -43,6 +43,7 @@ import { BalanceService } from '../../services/balance.service';
 import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
 import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
+import { DelegateAdminDialogComponent } from '../../components/delegate-admin-dialog/delegate-admin-dialog.component';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -521,6 +522,26 @@ export class GroupComponent implements OnInit {
     this.expendituresFilter.min_date = rsp.min_date;
     this.expendituresFilter.max_date = rsp.max_date;
 
+    await this.refreshData();
+  }
+
+  async delegateAdmin(idUser: number): Promise<void> {
+    let dialogRef = this.dialog.open(DelegateAdminDialogComponent, {
+      width: '500px', 
+      data: {id_group: this.id_group, id_user: idUser}
+    });
+    let rsp = await lastValueFrom(dialogRef.afterClosed());
+    if (!rsp){
+      console.log("No actualizo nada y cierro!")
+      return;
+    }
+
+    //Agarro por el usuario y por el grupo (asi se filtra en la tabla de group members)
+    let viejoAdmin = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
+    viejoAdmin[0].is_admin = false
+    await lastValueFrom(this.groupMemberService.putGroupMember(viejoAdmin[0]))
+
+    this.snackBarService.open('Rol administrador delegado', 'success');
     await this.refreshData();
   }
 
