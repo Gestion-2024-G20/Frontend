@@ -125,6 +125,7 @@ export class GroupComponent implements OnInit {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
       this.group = groupData!;
+      console.log(this.group.is_deleted);
     } catch (error) {
       // TODO: handle error
       this.router.navigateByUrl('/home');

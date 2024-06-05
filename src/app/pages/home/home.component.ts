@@ -13,6 +13,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ChangeGroupNameDialogComponent } from '../../components/changeGroupNameDialog/changeGroupNameDialog.component';
+import { DeleteGroupDialogComponent } from '../../components/deleteGroupDialog/delete-group-dialog/deleteGroupDialog.component';
 import { NewGroupDialogComponent } from '../../components/newGroupDialog/newGroupDialog.component';
 import { Invitation } from '../../../classes/invitation';
 import { InvitationService } from '../../services/invitation.service';
@@ -159,7 +160,30 @@ export class HomeComponent implements OnInit {
     this.refreshInvitations();
   }
 
-  deleteGroup(): void {
-    console.log("delete group")
+  
+  async deleteGroup(index:number): Promise<void> {
+    try{
+      console.log("delete group")
+      const id_group = this.userGroups[index].id_group; 
+      const dialogRef = this.dialog.open(DeleteGroupDialogComponent, {
+        width: '250px',
+        data: {title: "Eliminar grupo", content: "Estás seguro de querer eliminar el grupo?", groupId: id_group}
+      });
+      const response = await lastValueFrom(dialogRef.afterClosed());
+      if (response && response != "Ok"){
+        this.snackBarService.open(response, 'error');
+
+        return;
+      } else if (!response){
+        return;
+      }
+
+      this.snackBarService.open('Grupo ', 'success');
+      await this.refreshGroups();
+    }
+    catch(error){
+      console.log("Entré al catch de deleteGroup!");
+      this.snackBarService.open('' + error, 'error');
+    }
   }
 }

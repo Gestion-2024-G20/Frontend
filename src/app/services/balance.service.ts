@@ -30,4 +30,22 @@ export class BalanceService {
             );
     }
 
+    balanceIsNull(groupId: number): Observable<number|null> {
+        return this.http.get<ResponseModel<number>>(`${environment.apiUrl}/balance/is_null?id_group=` + groupId)
+            .pipe(
+                map(response => {
+                    if (response && response.message === "OK" && response.dataModel) {
+                        return response.dataModel;
+                    } else if (response && response.message === "NOT FOUND") {
+                        return null
+                    } else {
+                        throw new Error('Failed to deserialize response or invalid data received');
+                    }
+                }),
+                catchError(error => {
+                    return throwError(() => new Error('Failed to fetch balances: ' + error.message));
+                })
+            );
+    }
+
 }

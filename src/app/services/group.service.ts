@@ -105,4 +105,43 @@ putGroup(group: Group): Observable<Group|null> {
     );
 }
 
+deleteGroup(group_id: number): Observable<Group|null> {
+  return this.http.delete<ResponseModel<Group>>(`${environment.apiUrl}/groups/` + group_id)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "NOT FOUND") {
+          return null;
+        } else if (response && response.message === "ERROR") {
+          return null;
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to delete group: ' + error.message));
+      })
+    );
+}
+
+
+markGroupAsDeleted(id_group: number): Observable<Group|null> {
+  return this.http.put<ResponseModel<Group>>(`${environment.apiUrl}/groups/makr_as_deleted?group_id=` + id_group, null)
+    .pipe(
+      map(response => {
+        if (response && response.message === "OK" && response.dataModel) {
+          return response.dataModel;
+        } else if (response && response.message === "ERROR") {
+          return null
+        } else {
+          throw new Error('Failed to deserialize response or invalid data received');
+        }
+      }),
+      catchError(error => {
+        return throwError(() => new Error('Failed to put group: ' + error.message));
+      })
+    );
+}
+
 }

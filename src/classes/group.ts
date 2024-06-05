@@ -5,4 +5,5 @@ export class Group {
     members_count: number = 0;
     time_created: string = "";
     description: string = "";
+    is_deleted: boolean = false;
   }

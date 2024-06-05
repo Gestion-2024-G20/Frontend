@@ -85,7 +85,7 @@
                         <tr mat-row *matRowDef="let row; columns: displayedColumnsMembers;"></tr>
                     </table>
                     <section class="buttons">
-                        @if (this.isAdmin){
+                        @if (this.isAdmin && !this.group.is_deleted){
                             <button class="btn btn-primary" type="button" (click)="createRequestUrl()"><mat-icon>link</mat-icon>Obtener link de invitación</button>
                             <button class="btn btn-primary" type="button" (click)="addUser()">Invitar usuario</button>
                             <button class="btn btn-primary" type="button" (click)="listadoInvitados()">Ver invitados</button>
@@ -106,7 +106,7 @@
                 </mat-expansion-panel-header>
                 <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
                     <section class="buttons">
-                        <button *ngIf="this.isAdmin" class="btn btn-primary" type="button" (click)="createCategory()">Crear categoría</button>
+                        <button *ngIf="this.isAdmin && !this.group.is_deleted" class="btn btn-primary" type="button" (click)="createCategory()">Crear categoría</button>
                     </section>
                     <table class="table table-striped table-hover">
                         <thead class="thead-dark">
@@ -127,7 +127,7 @@
                                 <td class="buttons">
                                     <button type="button" class="btn btn-primary firstButton"
                                         (click)="detailCategory(category)">Detalle</button>
-                                    <button *ngIf="this.isAdmin" type="button" class="btn btn-danger"
+                                    <button *ngIf="this.isAdmin && !this.group.is_deleted" type="button" class="btn btn-danger"
                                         (click)="deleteCategory(category)">Eliminar categoría</button>
                                 </td>
                             </tr>
@@ -147,7 +147,7 @@
                 <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
                     <section class="buttons">
                         <button class="btn btn-primary" type="button" (click)="filterExpenditures()">Filtrar gastos</button>
-                        <button class="btn btn-primary" type="button" (click)="createExpenditure()">Añadir Gasto</button>
+                        <button *ngIf="!this.group.is_deleted" class="btn btn-primary" type="button" (click)="createExpenditure()">Añadir Gasto</button>
                     </section>
                     <table class="table table-striped table-hover">
                         <thead class="thead-dark">
@@ -167,7 +167,7 @@
                             <td>{{e.id_user}}</td>
                             <td>{{e.description}}</td>
                             <td>{{e.amount}}</td>
-                            <td *ngIf="this.isAdmin" class="buttons">
+                            <td *ngIf="this.isAdmin && !this.group.is_deleted" class="buttons">
                                 <button type="button" class="btn btn-primary" (click)="updateExpenditure(e)">Editar Gasto</button>
                                 <button type="button" class="btn btn-danger" (click)="deleteExpenditure(e)">Eliminar Gasto</button>
                             </td>
