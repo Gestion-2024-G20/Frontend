@@ -127,7 +127,7 @@ deleteGroup(group_id: number): Observable<Group|null> {
 
 
 markGroupAsDeleted(id_group: number): Observable<Group|null> {
-  return this.http.put<ResponseModel<Group>>(`${environment.apiUrl}/groups/makr_as_deleted?group_id=` + id_group, null)
+  return this.http.post<ResponseModel<Group>>(`${environment.apiUrl}/groups/mark_as_deleted/${id_group}`, null)
     .pipe(
       map(response => {
         if (response && response.message === "OK" && response.dataModel) {

@@ -51,7 +51,7 @@
                                     [src]="'/assets/images/' + element.profilePhoto_filename"
                                     class="avatar-img"
                                     alt="Avatar"
-                                    style="width:30px;height:30px;"
+                                    style="width:30px;height:30px;clip-path: circle();"
                                 />
                                 <mat-icon *ngIf="!element.profilePhoto_filename">person</mat-icon>
                                 {{element.username}}</td>

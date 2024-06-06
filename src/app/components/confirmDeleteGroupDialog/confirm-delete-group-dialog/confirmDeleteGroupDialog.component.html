@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <p>Dado que el grupo contiene saldos pendientes puede:</p>
+  <p> - Cancelar la elimnación</p>
+  <p> - Eliminar el grupo de manera forzada (no recomendado): elimina el grupo ignorando los saldos pendientes</p>
+  <p> - Eliminar el grupo de manera no forzada (recomendado): bloquea las modificaciones en el grupo y espera hasta que no haya saldos pendientes para proceder con la eliminación"</p>
+
+  </div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+  <button mat-button class="btn btn-danger"  (click)="onForceDelete()" >Eliminación forzada</button>
+  <button mat-button class="btn btn-primary"  (click)="onRegularDelete()" >Eliminación no forzada</button>
+</div>

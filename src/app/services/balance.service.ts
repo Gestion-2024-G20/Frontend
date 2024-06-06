@@ -34,7 +34,7 @@ export class BalanceService {
         return this.http.get<ResponseModel<number>>(`${environment.apiUrl}/balance/is_null?id_group=` + groupId)
             .pipe(
                 map(response => {
-                    if (response && response.message === "OK" && response.dataModel) {
+                    if (response && response.message === "OK" && (response.dataModel || response.dataModel==0) ) {
                         return response.dataModel;
                     } else if (response && response.message === "NOT FOUND") {
                         return null
