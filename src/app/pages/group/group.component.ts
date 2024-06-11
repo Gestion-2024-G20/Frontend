@@ -44,6 +44,9 @@ import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
 import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
 import { DelegateAdminDialogComponent } from '../../components/delegate-admin-dialog/delegate-admin-dialog.component';
+import { Balance } from '../../../classes/balance';
+import { ExpenditureShare } from '../../../classes/expenditureShare';
+import { ExpenditureShareService } from '../../services/expenditureShare.service';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -110,6 +113,7 @@ export class GroupComponent implements OnInit {
     private categoryService: CategoryService,
     private balanceService: BalanceService,
     private expenditureService: ExpenditureService,
+    private expenditureShareService: ExpenditureShareService,
     private categoryShareService: CategoryShareService,
     private authService: AuthService, 
     private snackBarService: SnackbarService, 
@@ -544,6 +548,82 @@ export class GroupComponent implements OnInit {
 
     this.snackBarService.open('Rol administrador delegado', 'success');
     await this.refreshData();
+  }
+
+  async saldarDeudaAPagar(balance: Balance): Promise<void> {
+
+    try { 
+      let expenditure_shares: ExpenditureShare[] = [];
+      let exp_sh1= new ExpenditureShare;
+      exp_sh1.id_user = balance.id_user;
+      exp_sh1.share_percentage = 0; 
+      expenditure_shares.push(exp_sh1); 
+      let exp_sh2= new ExpenditureShare;
+      exp_sh2.id_user = this.loggedUserId;
+      exp_sh2.share_percentage = 100; 
+      expenditure_shares.push(exp_sh2); 
+
+
+
+      let expenditure = new Expenditure;
+      expenditure.amount = balance.amount;  
+      expenditure.description = "SALDO DEUDA";  
+      expenditure.id_user = balance.id_user;  
+      expenditure.id_group = this.id_group;  
+      expenditure.id_category = 0;
+      let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
+      for (const es of expenditure_shares){
+        es.id_expenditure = expenditureCreated.id_expenditure; 
+        let expenditureShareCreated = await lastValueFrom(this.expenditureShareService.postExpenditureShare(es)) as ExpenditureShare;
+      }
+      
+      this.snackBarService.open('Deuda saldada', 'success');
+    } catch (e) {
+      this.snackBarService.open('Error saldando deuda: ' + e, 'error');
+      return; 
+    } finally {
+      await this.refreshData();
+
+    }
+
+  }
+
+  async saldarDeudaARecibir(balance: Balance): Promise<void> {
+
+    try { 
+      let expenditure_shares: ExpenditureShare[] = [];
+      let exp_sh1= new ExpenditureShare;
+      exp_sh1.id_user = balance.id_user;
+      exp_sh1.share_percentage = 100; 
+      expenditure_shares.push(exp_sh1); 
+      let exp_sh2= new ExpenditureShare;
+      exp_sh2.id_user = this.loggedUserId;
+      exp_sh2.share_percentage = 0; 
+      expenditure_shares.push(exp_sh2); 
+
+
+
+      let expenditure = new Expenditure;
+      expenditure.amount = balance.amount;  
+      expenditure.description = "SALDO DEUDA";  
+      expenditure.id_user = this.loggedUserId;  
+      expenditure.id_group = this.id_group;  
+      expenditure.id_category = 0;
+      let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
+      for (const es of expenditure_shares){
+        es.id_expenditure = expenditureCreated.id_expenditure; 
+        let expenditureShareCreated = await lastValueFrom(this.expenditureShareService.postExpenditureShare(es)) as ExpenditureShare;
+      }
+      
+      this.snackBarService.open('Deuda saldada', 'success');
+    } catch (e) {
+      this.snackBarService.open('Error saldando deuda: ' + e, 'error');
+      return; 
+    } finally {
+      await this.refreshData();
+
+    }
+
   }
 
   goTo(){

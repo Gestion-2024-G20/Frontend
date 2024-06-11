@@ -4,3 +4,5 @@ export class ExpenditureShare {
     id_expenditure: number = 0;
     share_percentage : number = 0;
   }
+
+  
