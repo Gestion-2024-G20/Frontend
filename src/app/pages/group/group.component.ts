@@ -17,10 +17,10 @@ import { CategoryShareService } from '../../services/categoryShare.service';
 import { AuthService } from '../../services/auth.service';
 import { DeleteMemberDialogComponent } from '../../components/deleteMemberDialog/deleteMemberDialog.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import {MatDialogModule} from '@angular/material/dialog';
-import { MatTableModule, MatTableDataSource  } from '@angular/material/table';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCard } from '@angular/material/card';
 import { MatCardHeader } from '@angular/material/card';
 import { MatCardTitle } from '@angular/material/card';
@@ -33,7 +33,7 @@ import { UpdateExpenditureDialogComponent } from '../../components/updateExpendi
 import { DeleteExpenditureDialogComponent } from '../../components/deleteExpenditureDialog/delete-expenditure-dialog/deleteExpenditureDialog.component';
 import { FilterExpendituresDialogComponent } from '../../components/filterExpendituresDialog/filterExpendituresDialog.component';
 import { ExpendituresFilter } from '../../../classes/expendituresFilter';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { InvitationListDialogComponent } from '../../components/invitation-list-dialog/invitation-list-dialog.component';
 import { Invitation } from '../../../classes/invitation';
 import { InvitationService } from '../../services/invitation.service';
@@ -48,8 +48,10 @@ import { Balance } from '../../../classes/balance';
 import { ExpenditureShare } from '../../../classes/expenditureShare';
 import { ExpenditureShareService } from '../../services/expenditureShare.service';
 import { EditCategoryDialogComponent } from '../../components/editCategoryDialog/editCategoryDialog.component';
+import { StatisticsModule } from '../../components/statisticsDialog/statistics.module';
+import { StatisticsComponent } from '../../components/statisticsDialog/statistics.component';
 export interface MembersTableElement {
-  id_user: number; 
+  id_user: number;
   username: string;
   type: string;
   profilePhoto_filename: string;
@@ -69,9 +71,10 @@ export interface MembersTableElement {
     MatCard,
     MatCardHeader,
     MatCardTitle,
-    MatCardContent, 
+    MatCardContent,
     MatTableModule,
-    MatExpansionModule
+    MatExpansionModule,
+    StatisticsModule
   ],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
@@ -80,7 +83,7 @@ export class GroupComponent implements OnInit {
 
   public userGroups: Array<Group> = [];
   public userGroupsIsAdmin: Array<boolean> = [];
-  private id_group: number = -1;
+  public id_group: number = -1;
 
   public loggedUserId: number = this.authService.loggedUserId();
   public isAdmin: boolean = false;
@@ -100,24 +103,26 @@ export class GroupComponent implements OnInit {
 
   public expendituresFilter: ExpendituresFilter = new ExpendituresFilter;
 
-  public balancesUserLogged: TotalBalances = new TotalBalances; 
-  public balances: Array<TotalBalances> = new Array<TotalBalances>; 
+  public balancesUserLogged: TotalBalances = new TotalBalances;
+  public balances: Array<TotalBalances> = new Array<TotalBalances>;
 
   public totalToPay: number = 0;
   public totalToReceive: number = 0;
   invitationUrl: string = '';
 
+  public reload: boolean = false;
+
   constructor(
     private userService: UserService,
-    private groupService: GroupService, 
+    private groupService: GroupService,
     private groupMemberService: GroupMemberService,
     private categoryService: CategoryService,
     private balanceService: BalanceService,
     private expenditureService: ExpenditureService,
     private expenditureShareService: ExpenditureShareService,
     private categoryShareService: CategoryShareService,
-    private authService: AuthService, 
-    private snackBarService: SnackbarService, 
+    private authService: AuthService,
+    private snackBarService: SnackbarService,
     private route: ActivatedRoute,
     private router: Router,
     public dialog: MatDialog,
@@ -125,7 +130,7 @@ export class GroupComponent implements OnInit {
     private requestService: RequestService
 
   ) { }
-  
+
   async getGroupData(): Promise<void> {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
@@ -140,34 +145,34 @@ export class GroupComponent implements OnInit {
   async getMembersData(): Promise<void> {
     // Get members data
     try {
-      let arrayMembers = new Array;  
+      let arrayMembers = new Array;
       const members = await lastValueFrom(this.groupMemberService.getGroupMembers(this.id_group)) as [GroupMember]
       this.groupMembers = members!;
       this.admins = new Array<User>;
       this.members = new Array<User>;
       for (const member of this.groupMembers) {
-        let elm : MembersTableElement = {id_user: 0, username: "", type: "", profilePhoto_filename: ""};
+        let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
         const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
-        if (!user){
+        if (!user) {
           throw Error("group member not found");
         }
         elm.id_user = user.id_user;
-        elm.username = user.username; 
+        elm.username = user.username;
         elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
         if (member.is_admin) {
           if (member.id_user == this.loggedUserId)
             this.isAdmin = true;
           this.admins.push(user);
-          elm.type = "admin"; 
-          arrayMembers.push(elm); 
+          elm.type = "admin";
+          arrayMembers.push(elm);
         } else {
-          elm.type = "member"; 
+          elm.type = "member";
           this.members.push(user);
-          arrayMembers.push(elm); 
+          arrayMembers.push(elm);
         }
       }
       this.totalmembers = this.admins.concat(this.members);
-      this.dataSourceMembers.data = arrayMembers; 
+      this.dataSourceMembers.data = arrayMembers;
     } catch (error) {
       // TODO: handle error
       this.snackBarService.open('Unknown error retreiving members:' + error, 'error');
@@ -200,10 +205,10 @@ export class GroupComponent implements OnInit {
   async getBalanceData(): Promise<void> {
     // Get balance data
     try {
-      this.totalToPay = 0; 
-      this.totalToReceive = 0; 
+      this.totalToPay = 0;
+      this.totalToReceive = 0;
       this.balancesUserLogged = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
-      
+
       for (const balance of this.balancesUserLogged.to_pay) {
         this.totalToPay += balance.amount;
       }
@@ -222,6 +227,7 @@ export class GroupComponent implements OnInit {
   }
 
   async refreshData(): Promise<void> {
+    this.reload = true;
     await this.getGroupData();
     await this.getMembersData();
     await this.getCategoriesData();
@@ -244,21 +250,21 @@ export class GroupComponent implements OnInit {
   async createCategory(): Promise<void> {
     try {
 
-      if (this.totalmembers.length < 1){
+      if (this.totalmembers.length < 1) {
         this.snackBarService.open('Se deben tener más de un miembro', 'error');
         return;
       }
-      
+
       let dialogRef = this.dialog.open(AddCategoryDialogComponent, {
-        width: '25%',
-        data: {showError: false, msgError: "", groupId: this.id_group, totalMembers: this.totalmembers}
+        width: '50%',
+        data: { showError: false, msgError: "", groupId: this.id_group, totalMembers: this.totalmembers }
       });
 
       // categoryDialogResponse va a tener un valor retornado por el dialogRef.close(returnParams) de AddCategoryDialogComponent
       let categoryDialogResponse = await lastValueFrom(dialogRef.afterClosed());
 
       // Aca se entra si toco "No thanks", lo que significa que se cerró el dialog sin parámetros
-      if (!categoryDialogResponse){
+      if (!categoryDialogResponse) {
         return;
       }
 
@@ -308,17 +314,17 @@ export class GroupComponent implements OnInit {
     try {
       const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
         width: '250px',
-        data: {title: "Eliminar categoría", content: "Estás seguro que queres eliminar esta categoría?"}
+        data: { title: "Eliminar categoría", content: "Estás seguro que queres eliminar esta categoría?" }
       });
 
       const response = await lastValueFrom(dialogRef.afterClosed());
       //Si la respuesta es nula, entonces es porque cerré el dialog sin parámetros
-      if (!response){
+      if (!response) {
         return;
       }
       await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
       await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
-      
+
       this.snackBarService.open('Categoría eliminada', 'success');
       await this.refreshData();
     } catch (error) {
@@ -334,30 +340,30 @@ export class GroupComponent implements OnInit {
       }
       const dialogRef = this.dialog.open(ListSharesDialogComponent, {
         width: '250px',
-        data: {category: category, category_shares: category_shares}
+        data: { category: category, category_shares: category_shares }
       });
       const response = await lastValueFrom(dialogRef.afterClosed());
-      if (!response){
+      if (!response) {
         return;
       }
     } catch (error) {
       this.snackBarService.open('' + error, 'error');
     }
   }
-  async addUser() : Promise<void> {
+  async addUser(): Promise<void> {
     let dialogRef = this.dialog.open(AddUserDialogComponent, {
       width: '250px',
-      data: {title: "Invitar usuario al grupo", content: "Username ", showError: false, msgError:"", userIdRequestor: this.authService.loggedUserId()}
+      data: { title: "Invitar usuario al grupo", content: "Username ", showError: false, msgError: "", userIdRequestor: this.authService.loggedUserId() }
     });
     let username = await lastValueFrom(dialogRef.afterClosed());
-    if (!username){
+    if (!username) {
       //console.log("Entré acá!");
       return;
     }
-    
+
     //console.log("El nombre es" + username);
     const user = await lastValueFrom(this.userService.getUserByUsername(username)) as User[] | null;
-    if (!user){
+    if (!user) {
       this.snackBarService.open('Username no encontrado', 'info');
       return;
     }
@@ -370,9 +376,9 @@ export class GroupComponent implements OnInit {
 
     //Ahora quiero ver si existe una invitación con ese id de usuario (quiero usar objetoUser.id_user)
 
-    if (invitaciones){
-      for (const i of invitaciones){
-        if (i.id_user === objetoUser.id_user){
+    if (invitaciones) {
+      for (const i of invitaciones) {
+        if (i.id_user === objetoUser.id_user) {
           this.snackBarService.open('Ya se envió una invitación al usuario', 'info');
           return;
         }
@@ -394,8 +400,8 @@ export class GroupComponent implements OnInit {
     await this.refreshData();
   }
 
-  async createRequestUrl(): Promise<void>{
-    const token =  this.generateRandomToken(50);
+  async createRequestUrl(): Promise<void> {
+    const token = this.generateRandomToken(50);
     let url = "http://localhost:4200/request/" + this.id_group + "/" + token;
     this.invitationUrl = url;
 
@@ -416,23 +422,23 @@ export class GroupComponent implements OnInit {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     const charactersLength = characters.length;
-  
+
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * charactersLength);
       result += characters.charAt(randomIndex);
     }
-  
+
     return result;
   }
 
-  async deleteUser(index:number): Promise<void> {
+  async deleteUser(index: number): Promise<void> {
 
     const dialogRef = this.dialog.open(DeleteMemberDialogComponent, {
       width: '250px',
-      data: {title: "Eliminar miembro", content: "Estás seguro de querer eliminar este usuario?"}
+      data: { title: "Eliminar miembro", content: "Estás seguro de querer eliminar este usuario?" }
     });
     const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
-    if (!groupCreatedName){
+    if (!groupCreatedName) {
       return;
     }
 
@@ -442,24 +448,24 @@ export class GroupComponent implements OnInit {
     let balanceUsuarioABorrar = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, index)) as TotalBalances;
     console.log(balanceUsuarioABorrar);
     //Chequeo que el usuario a borrar no tenga deudas con nadie ni nadie le deba nada
-    if(balanceUsuarioABorrar.to_pay.length === 0  && balanceUsuarioABorrar.to_receive.length === 0){
+    if (balanceUsuarioABorrar.to_pay.length === 0 && balanceUsuarioABorrar.to_receive.length === 0) {
       await lastValueFrom(this.groupMemberService.deleteGroupMember(groupMemberDeleteArray[0])) as GroupMember;
       this.snackBarService.open('Usuario eliminado', 'success');
       await this.refreshData();
       return;
     }
-      
+
     //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
-    this.snackBarService.open('El usuario tiene balances pendientes', 'error');    
+    this.snackBarService.open('El usuario tiene balances pendientes', 'error');
   }
 
-  async createExpenditure() : Promise<void> {
+  async createExpenditure(): Promise<void> {
     let dialogRef = this.dialog.open(AddExpenditureDialogComponent, {
-      width: '500px', 
-      data: {categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group}
+      width: '500px',
+      data: { categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       return;
     }
     this.snackBarService.open('Gasto creado', 'success');
@@ -467,47 +473,47 @@ export class GroupComponent implements OnInit {
     await this.refreshData();
   }
   async deleteExpenditure(expenditure: Expenditure): Promise<void> {
-    try{
+    try {
       console.log(expenditure);
       const dialogRef = this.dialog.open(DeleteExpenditureDialogComponent, {
         width: '250px',
-        data: {title: "Eliminar gasto", content: "Estás seguro de querer eliminar el gasto?", expenditureId: expenditure.id_expenditure}
+        data: { title: "Eliminar gasto", content: "Estás seguro de querer eliminar el gasto?", expenditureId: expenditure.id_expenditure }
       });
       const response = await lastValueFrom(dialogRef.afterClosed());
-      if (response && response != "Ok"){
+      if (response && response != "Ok") {
         this.snackBarService.open(response, 'error');
 
         return;
-      } else if (!response){
+      } else if (!response) {
         return;
       }
 
       this.snackBarService.open('Gasto eliminado ', 'success');
       await this.refreshData();
     }
-    catch(error){
+    catch (error) {
       console.log("Entré al catch de deleteExpenditure!");
       this.snackBarService.open('' + error, 'error');
     }
   }
   async updateExpenditure(expenditure: Expenditure): Promise<void> {
     let dialogRef = this.dialog.open(UpdateExpenditureDialogComponent, {
-      width: '500px', 
-      data: {categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group, expenditure: expenditure}
+      width: '500px',
+      data: { categories: this.categories, userIdRequestor: this.authService.loggedUserId(), groupId: this.id_group, expenditure: expenditure }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       return;
     }
     await this.refreshData();
   }
   async listadoInvitados(): Promise<void> {
     let dialogRef = this.dialog.open(InvitationListDialogComponent, {
-      width: '500px', 
-      data: {id_group: this.id_group}
+      width: '500px',
+      data: { id_group: this.id_group }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       return;
     }
 
@@ -517,11 +523,11 @@ export class GroupComponent implements OnInit {
 
   async listadoSolicitudes(): Promise<void> {
     let dialogRef = this.dialog.open(SolicitudesListDialogComponent, {
-      width: '500px', 
-      data: {id_group: this.id_group}
+      width: '500px',
+      data: { id_group: this.id_group }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       await this.refreshData();
       return;
     }
@@ -534,7 +540,7 @@ export class GroupComponent implements OnInit {
     let groupMemberDeleteArray = await lastValueFrom(this.groupMemberService.getUserIdGroupIdGroupMembers(this.loggedUserId, this.id_group)) as [GroupMember];
     //Acá tengo que chequear que no tenga deudas pendientes
     let balanceUsuarioABorrar = await lastValueFrom(this.balanceService.getUserTotalBalances(this.id_group, this.loggedUserId)) as TotalBalances;
-    if(balanceUsuarioABorrar.to_pay.length !== 0  || balanceUsuarioABorrar.to_receive.length !== 0){
+    if (balanceUsuarioABorrar.to_pay.length !== 0 || balanceUsuarioABorrar.to_receive.length !== 0) {
       //Necesito mandar un mensaje de que no se puede borrar el usuario porque tiene balances pendientes
       this.snackBarService.open('Tenes saldos pendientes! Debes pagar tus deudas o recibir dinero.', 'error');
       return;
@@ -546,13 +552,13 @@ export class GroupComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  async filterExpenditures() : Promise<void> {
+  async filterExpenditures(): Promise<void> {
     let dialogRef = this.dialog.open(FilterExpendituresDialogComponent, {
-      width: '500px', 
-      data: {categories: this.categories, members:this.totalmembers}
+      width: '500px',
+      data: { categories: this.categories, members: this.totalmembers }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       return;
     }
     this.expendituresFilter.id_category = rsp.id_category;
@@ -565,11 +571,11 @@ export class GroupComponent implements OnInit {
 
   async delegateAdmin(idUser: number): Promise<void> {
     let dialogRef = this.dialog.open(DelegateAdminDialogComponent, {
-      width: '500px', 
-      data: {id_group: this.id_group, id_user: idUser}
+      width: '500px',
+      data: { id_group: this.id_group, id_user: idUser }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
-    if (!rsp){
+    if (!rsp) {
       console.log("No actualizo nada y cierro!")
       return;
     }
@@ -668,11 +674,19 @@ export class GroupComponent implements OnInit {
     //this.router.navigate(['/group/config/' + this.userGroups[index].id_group]);
   }
 
-  isAdminLoggedIn(){
-    return 
+  isAdminLoggedIn() {
+    return
+  }
+
+  showStatistics() {
+    let dialogRef = this.dialog.open(StatisticsComponent, {
+      width: '400vh',
+      height: '80%',
+      data: { id_group: this.id_group}
+    });
   }
 
 
-  
+
 
 }

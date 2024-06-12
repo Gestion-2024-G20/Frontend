@@ -19,13 +19,15 @@ export class LayoutComponent{
     {
       displayName: "Home",
       route: "/home",
-      iconName: "home",
-      profiles: [""]
+      iconName: "home"
     }
   ]
 
-
   constructor(private router: Router) {
+  }
+
+  goTo(route: string){
+    this.router.navigate([route]);
   }
 
 }

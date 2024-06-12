@@ -2,7 +2,10 @@
     <div class="content">
         <section class="header-section">
             <h2 class="title"> {{ this.group.name }}</h2>
-            <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>
+            <section style="display: flex; gap: 20px">
+                <button (click)="showStatistics()" type="button" class="btn btn-primary">Ver estadisticas</button>
+                <button *ngIf="!this.isAdmin" class="btn btn-danger" (click)="leaveGroup()">Abandonar grupo</button>    
+            </section>
         </section>
         <p> {{ this.group.description }}</p>
         <section  *ngIf="this.balancesUserLogged.to_pay.length > 0 || this.balancesUserLogged.to_receive.length > 0" class="balances">

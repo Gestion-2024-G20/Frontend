@@ -1,0 +1,9 @@
+<section id="chart">
+  <h5>{{title}}</h5>
+  <apx-chart
+    [series]="chartOptions.series || []"
+    [chart]="chartOptions.chart || { type: 'pie' }"
+    [labels]="chartOptions.labels"
+    [responsive]="chartOptions.responsive || []"
+  ></apx-chart>
+</section>

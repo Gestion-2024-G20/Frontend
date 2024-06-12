@@ -5,9 +5,9 @@
 
     <mat-nav-list>
       @for (menu of menus; track menu) {
-      <a mat-list-item href="/home" class="item">
+      <a mat-list-item [href]="menu.route" class="item">
         <mat-icon>{{ menu.iconName }}</mat-icon>
-        {{menu.displayName}}
+        <span class="label">{{menu.displayName}}</span>
       </a>
       }
     </mat-nav-list>

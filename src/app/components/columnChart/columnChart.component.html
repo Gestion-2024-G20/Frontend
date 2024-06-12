@@ -1,0 +1,14 @@
+<section id="chart">
+  <h5>{{title}}</h5>
+
+  <apx-chart
+    [series]="chartOptions.series || []"
+    [chart]="chartOptions.chart || { type: 'bar' }"
+    [dataLabels]="chartOptions.dataLabels || {}"
+    [plotOptions]="chartOptions.plotOptions || {}"
+    [responsive]="chartOptions.responsive || []"
+    [xaxis]="chartOptions.xaxis || {}"
+    [legend]="chartOptions.legend || {}"
+    [fill]="chartOptions.fill || {}"
+  ></apx-chart>
+</section>

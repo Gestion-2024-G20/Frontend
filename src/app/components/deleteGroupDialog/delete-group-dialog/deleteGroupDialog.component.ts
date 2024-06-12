@@ -40,25 +40,22 @@ export class DeleteGroupDialogComponent {
     async onClick(): Promise<void> {
 
       try{
-      let balanceIsNull = await lastValueFrom(this.balanceService.balanceIsNull(this.data.groupId)) as number;
-      console.log(balanceIsNull);
-      if (balanceIsNull == 1){
-        await lastValueFrom(this.groupService.deleteGroup(this.data.groupId)) as Group;
+        let balanceIsNull = await lastValueFrom(this.balanceService.balanceIsNull(this.data.groupId)) as number;
+        console.log(balanceIsNull);
+        if (balanceIsNull == 1){
+          await lastValueFrom(this.groupService.deleteGroup(this.data.groupId)) as Group;
 
-        this.dialogRef.close("Ok");
-      } else{
-        console.log('Balance not null');
-        const dialogRef = this.dialog.open(ConfirmDeleteGroupDialogComponent, {
-          width: '600px',
-          data: {title: "El grupo contiene saldos pendientes", 
-          groupId: this.data.groupId}
-        });
-        const response = await lastValueFrom(dialogRef.afterClosed());
-        this.dialogRef.close(response);
-        
-      }
-            
-      
+          this.dialogRef.close("Ok");
+        } else{
+          console.log('Balance not null');
+          const dialogRef = this.dialog.open(ConfirmDeleteGroupDialogComponent, {
+            width: '600px',
+            data: {title: "El grupo contiene saldos pendientes", 
+            groupId: this.data.groupId}
+          });
+          const response = await lastValueFrom(dialogRef.afterClosed());
+          this.dialogRef.close(response);
+        }
 
     } catch (e) {
       this.dialogRef.close("Error deleting group: " + e);
