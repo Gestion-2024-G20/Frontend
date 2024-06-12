@@ -1,0 +1,11 @@
+.modal-header{
+    display: flex;
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0px;
+}
+
+.statistics-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
