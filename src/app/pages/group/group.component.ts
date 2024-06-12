@@ -589,11 +589,11 @@ export class GroupComponent implements OnInit {
       let expenditure_shares: ExpenditureShare[] = [];
       let exp_sh1= new ExpenditureShare;
       exp_sh1.id_user = balance.id_user;
-      exp_sh1.share_percentage = 0; 
+      exp_sh1.share_percentage = 100; 
       expenditure_shares.push(exp_sh1); 
       let exp_sh2= new ExpenditureShare;
-      exp_sh2.id_user = this.loggedUserId;
-      exp_sh2.share_percentage = 100; 
+      exp_sh2.id_user = this.authService.loggedUserId();
+      exp_sh2.share_percentage = 0; 
       expenditure_shares.push(exp_sh2); 
 
 
@@ -601,7 +601,7 @@ export class GroupComponent implements OnInit {
       let expenditure = new Expenditure;
       expenditure.amount = balance.amount;  
       expenditure.description = "SALDO DEUDA";  
-      expenditure.id_user = balance.id_user;  
+      expenditure.id_user = this.authService.loggedUserId();  
       expenditure.id_group = this.id_group;  
       expenditure.id_category = 0;
       let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
@@ -625,13 +625,17 @@ export class GroupComponent implements OnInit {
 
     try { 
       let expenditure_shares: ExpenditureShare[] = [];
+      
+      // El usuario que pagará la deuda
       let exp_sh1= new ExpenditureShare;
       exp_sh1.id_user = balance.id_user;
-      exp_sh1.share_percentage = 100; 
+      exp_sh1.share_percentage = 0; 
       expenditure_shares.push(exp_sh1); 
-      let exp_sh2= new ExpenditureShare;
-      exp_sh2.id_user = this.loggedUserId;
-      exp_sh2.share_percentage = 0; 
+
+      // El usuario que recibe el pago
+      let exp_sh2 = new ExpenditureShare;
+      exp_sh2.id_user = this.authService.loggedUserId();
+      exp_sh2.share_percentage = 100; 
       expenditure_shares.push(exp_sh2); 
 
 
@@ -639,9 +643,10 @@ export class GroupComponent implements OnInit {
       let expenditure = new Expenditure;
       expenditure.amount = balance.amount;  
       expenditure.description = "SALDO DEUDA";  
-      expenditure.id_user = this.loggedUserId;  
+      expenditure.id_user = balance.id_user;  
       expenditure.id_group = this.id_group;  
-      expenditure.id_category = 0;
+      expenditure.id_category = 0;      
+      
       let expenditureCreated = await lastValueFrom(this.expenditureService.postExpenditure(expenditure)) as Expenditure;
       for (const es of expenditure_shares){
         es.id_expenditure = expenditureCreated.id_expenditure; 

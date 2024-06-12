@@ -97,7 +97,7 @@ getGroupExpenditures(expendituresFilter: ExpendituresFilter): Observable<Array<E
           if (response && response.message === "OK" && response.dataModel) {
             return response.dataModel;
           } else if (response && response.message === "ERROR") {
-            return null;
+            throw new Error('Failed to post expenditure: ' + response.message);
           } else {
             throw new Error('Failed to deserialize response or invalid data received');
           }
