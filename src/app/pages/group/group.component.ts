@@ -47,6 +47,7 @@ import { DelegateAdminDialogComponent } from '../../components/delegate-admin-di
 import { Balance } from '../../../classes/balance';
 import { ExpenditureShare } from '../../../classes/expenditureShare';
 import { ExpenditureShareService } from '../../services/expenditureShare.service';
+import { EditCategoryDialogComponent } from '../../components/editCategoryDialog/editCategoryDialog.component';
 export interface MembersTableElement {
   id_user: number; 
   username: string;
@@ -270,6 +271,38 @@ export class GroupComponent implements OnInit {
       this.snackBarService.open('' + error, 'error');
     }
   }
+
+  async editCategory(category: Category): Promise<void> {
+    try {
+
+      if (this.totalmembers.length < 1){
+        this.snackBarService.open('Se deben tener más de un miembro', 'error');
+        return;
+      }
+      
+      let dialogRef = this.dialog.open(EditCategoryDialogComponent, {
+        width: '25%',
+        data: {showError: false, msgError: "", groupId: this.id_group, totalMembers: this.totalmembers, id_category: category.id_category}
+      });
+
+      // categoryDialogResponse va a tener un valor retornado por el dialogRef.close(returnParams) de EditCategoryDialogComponent
+      let categoryDialogResponse = await lastValueFrom(dialogRef.afterClosed());
+
+      // Aca se entra si toco "No thanks", lo que significa que se cerró el dialog sin parámetros
+      if (!categoryDialogResponse){
+        return;
+      }
+
+
+      this.snackBarService.open('Categoría editada', 'success');
+      // Refresco la lista de categorias
+      await this.refreshData();
+
+    } catch (error) {
+      this.snackBarService.open('' + error, 'error');
+    }
+  }
+
 
   async deleteCategory(category: Category): Promise<void> {
     try {

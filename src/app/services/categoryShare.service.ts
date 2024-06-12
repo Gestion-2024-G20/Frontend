@@ -128,4 +128,23 @@ export class CategoryShareService {
                 })
             );
     }
+
+
+    putCategoryShare(categoryShare: CategoryShare): Observable<CategoryShare|null> {
+        return this.http.put<ResponseModel<CategoryShare>>(`${environment.apiUrl}/categoryShares/` + categoryShare.id_cs, categoryShare)
+          .pipe(
+            map(response => {
+              if (response && response.message === "OK" && response.dataModel) {
+                return response.dataModel;
+              } else if (response && response.message === "ERROR") {
+                return null
+              } else {
+                throw new Error('Failed to deserialize response or invalid data received');
+              }
+            }),
+            catchError(error => {
+              return throwError(() => new Error('Failed update categoryShares: ' + error.message));
+            })
+          );
+      }
 }

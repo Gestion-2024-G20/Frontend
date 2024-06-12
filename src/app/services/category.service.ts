@@ -69,4 +69,22 @@ export class CategoryService {
             );
     }
 
+    putCategory(category: Category): Observable<Category|null> {
+        return this.http.put<ResponseModel<Category>>(`${environment.apiUrl}/category/` + category.id_category, category)
+          .pipe(
+            map(response => {
+              if (response && response.message === "OK" && response.dataModel) {
+                return response.dataModel;
+              } else if (response && response.message === "ERROR") {
+                return null
+              } else {
+                throw new Error('Failed to deserialize response or invalid data received');
+              }
+            }),
+            catchError(error => {
+              return throwError(() => new Error('Failed update category: ' + error.message));
+            })
+          );
+      }
+
 }

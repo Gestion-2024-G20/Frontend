@@ -149,6 +149,9 @@
                                         (click)="detailCategory(category)">Detalle</button>
                                     <button *ngIf="this.isAdmin && !this.group.is_deleted" type="button" class="btn btn-danger"
                                         (click)="deleteCategory(category)">Eliminar categoría</button>
+                                    
+                                    <button *ngIf="this.isAdmin && !this.group.is_deleted" type="button" class="btn btn-primary"
+                                        (click)="editCategory(category)">Editar categoría</button>
                                 </td>
                             </tr>
                             }

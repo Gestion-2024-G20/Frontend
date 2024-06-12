@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Editar Categoría</h1>
+<div class="content">
+  <div mat-dialog-content>
+    <p>Ingrese nombre y descripción</p>
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Nombre</mat-label>
+        <input matInput [(ngModel)]="data.name" cdkFocusInitial >
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Descripción</mat-label>
+        <input matInput [(ngModel)]="data.description" cdkFocusInitial >
+      </mat-form-field>
+    </div>
+    
+    <p>Ingrese los porcentajes</p>
+    @for (user of this.data.totalMembers; track $index) {
+      <div class="row">
+        <div class="col-md-3 title">
+          <p>{{user.username}}</p>
+        </div>
+        <mat-form-field class="col-md-9">
+          <mat-label>%</mat-label>
+          <input matInput [(ngModel)]="data.memberPercentage[$index]" cdkFocusInitial >
+        </mat-form-field>
+      </div>
+    }
+    @if (data.showError) {
+      <mat-error 
+      >{{data.msgError}}</mat-error>
+    }
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancelar</button>
+  <button type="button" class="btn btn-primary" (click)="onClick()" >Editar categoría</button>
+
+</div>
