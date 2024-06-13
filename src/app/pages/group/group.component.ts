@@ -40,6 +40,7 @@ import { InvitationService } from '../../services/invitation.service';
 import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
 import { TotalBalances } from '../../../classes/totalBalances';
 import { BalanceService } from '../../services/balance.service';
+import { NonForcedDeleteService } from '../../services/nonForcedDelete.service';
 import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
 import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
@@ -127,7 +128,8 @@ export class GroupComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private invitationService: InvitationService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private nonForcedDeleteService: NonForcedDeleteService,
 
   ) { }
 
@@ -617,6 +619,8 @@ export class GroupComponent implements OnInit {
       }
       
       this.snackBarService.open('Deuda saldada', 'success');
+
+      this.checkNonForcedDelete();
     } catch (e) {
       this.snackBarService.open('Error saldando deuda: ' + e, 'error');
       return; 
@@ -660,6 +664,8 @@ export class GroupComponent implements OnInit {
       }
       
       this.snackBarService.open('Deuda saldada', 'success');
+
+      this.checkNonForcedDelete();
     } catch (e) {
       this.snackBarService.open('Error saldando deuda: ' + e, 'error');
       return; 
@@ -668,6 +674,14 @@ export class GroupComponent implements OnInit {
 
     }
 
+  }
+
+  async checkNonForcedDelete(){
+    let isDeleted = await this.nonForcedDeleteService.verifyAndDelete(this.group) as boolean;
+
+    if (isDeleted){
+      this.router.navigate(['/home']);
+    }
   }
 
   goTo(){
