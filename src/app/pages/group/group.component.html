@@ -182,7 +182,7 @@
                                 <th scope="col">User Id</th>
                                 <th scope="col">Descripción</th>
                                 <th scope="col">Cantidad</th>
-                                <th scope="col" *ngIf="this.isAdmin">Acción</th>
+                                <th scope="col" *ngIf="this.isAdmin  && !this.group.is_deleted">Acción</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -177,8 +177,6 @@ export class HomeComponent implements OnInit {
       } else if (!response){
         return;
       }
-
-      this.snackBarService.open('Grupo eliminado', 'success');
       await this.refreshGroups();
     }
     catch(error){

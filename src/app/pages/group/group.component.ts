@@ -137,9 +137,12 @@ export class GroupComponent implements OnInit {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
       this.group = groupData!;
+      if (!this.group){
+        this.snackBarService.open('El grupo ha sido eliminado', 'error');
+        this.router.navigateByUrl('/home');
+      }
       console.log(this.group.is_deleted);
-    } catch (error) {
-      // TODO: handle error
+    } catch (error) {   
       this.router.navigateByUrl('/home');
     }
   }
@@ -152,27 +155,30 @@ export class GroupComponent implements OnInit {
       this.groupMembers = members!;
       this.admins = new Array<User>;
       this.members = new Array<User>;
-      for (const member of this.groupMembers) {
-        let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
-        const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
-        if (!user) {
-          throw Error("group member not found");
-        }
-        elm.id_user = user.id_user;
-        elm.username = user.username;
-        elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
-        if (member.is_admin) {
-          if (member.id_user == this.loggedUserId)
-            this.isAdmin = true;
-          this.admins.push(user);
-          elm.type = "admin";
-          arrayMembers.push(elm);
-        } else {
-          elm.type = "member";
-          this.members.push(user);
-          arrayMembers.push(elm);
+      if (this.groupMembers){
+        for (const member of this.groupMembers) {
+          let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
+          const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
+          if (!user) {
+            throw Error("group member not found");
+          }
+          elm.id_user = user.id_user;
+          elm.username = user.username;
+          elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
+          if (member.is_admin) {
+            if (member.id_user == this.loggedUserId)
+              this.isAdmin = true;
+            this.admins.push(user);
+            elm.type = "admin";
+            arrayMembers.push(elm);
+          } else {
+            elm.type = "member";
+            this.members.push(user);
+            arrayMembers.push(elm);
+          }
         }
       }
+
       this.totalmembers = this.admins.concat(this.members);
       this.dataSourceMembers.data = arrayMembers;
     } catch (error) {
@@ -231,6 +237,7 @@ export class GroupComponent implements OnInit {
   async refreshData(): Promise<void> {
     this.reload = true;
     await this.getGroupData();
+    await this.checkNonForcedDelete();
     await this.getMembersData();
     await this.getCategoriesData();
     await this.getExpendituresData();
@@ -619,8 +626,6 @@ export class GroupComponent implements OnInit {
       }
       
       this.snackBarService.open('Deuda saldada', 'success');
-
-      this.checkNonForcedDelete();
     } catch (e) {
       this.snackBarService.open('Error saldando deuda: ' + e, 'error');
       return; 
@@ -664,8 +669,6 @@ export class GroupComponent implements OnInit {
       }
       
       this.snackBarService.open('Deuda saldada', 'success');
-
-      this.checkNonForcedDelete();
     } catch (e) {
       this.snackBarService.open('Error saldando deuda: ' + e, 'error');
       return; 

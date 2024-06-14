@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Group } from '../../classes/group';
-import { BalanceService } from '../services/balance.service';
-import { GroupService } from '../services/group.service';
-import { SnackbarService } from '../services/snackbar.service';
+import { BalanceService } from './balance.service';
+import { GroupService } from './group.service';
+import { SnackbarService } from './snackbar.service';
 import { lastValueFrom } from 'rxjs';
 
 
