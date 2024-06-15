@@ -46,3 +46,23 @@ mat-panel-title i{
     margin-left: auto;
     margin-right: auto;
 }
+
+.desc{
+    padding-left: 20px;
+}
+
+mat-card{
+    margin-top: 10px;
+}
+
+.balances, .saldosContainer{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+
+}
+
+.saldosContainer{
+    grid-template-columns: repeat(4, 1fr);
+}

@@ -21,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatCard } from '@angular/material/card';
+import { MatCard, MatCardSubtitle } from '@angular/material/card';
 import { MatCardHeader } from '@angular/material/card';
 import { MatCardTitle } from '@angular/material/card';
 import { MatCardContent } from '@angular/material/card';
@@ -70,6 +70,7 @@ export interface MembersTableElement {
     MatDialogModule,
     MatCard,
     MatCardHeader,
+    MatCardSubtitle,
     MatCardTitle,
     MatCardContent,
     MatTableModule,
