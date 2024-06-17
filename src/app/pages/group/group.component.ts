@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
@@ -40,7 +40,6 @@ import { InvitationService } from '../../services/invitation.service';
 import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
 import { TotalBalances } from '../../../classes/totalBalances';
 import { BalanceService } from '../../services/balance.service';
-import { NonForcedDeleteService } from '../../services/nonForcedDelete.service';
 import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
 import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
@@ -51,6 +50,7 @@ import { ExpenditureShareService } from '../../services/expenditureShare.service
 import { EditCategoryDialogComponent } from '../../components/editCategoryDialog/editCategoryDialog.component';
 import { StatisticsModule } from '../../components/statisticsDialog/statistics.module';
 import { StatisticsComponent } from '../../components/statisticsDialog/statistics.component';
+import { NonForcedDeleteService } from '../../services/nonforcedDelete.service';
 export interface MembersTableElement {
   id_user: number;
   username: string;
@@ -76,8 +76,10 @@ export interface MembersTableElement {
     MatCardContent,
     MatTableModule,
     MatExpansionModule,
-    StatisticsModule
+    StatisticsModule,
+    DatePipe,
   ],
+  providers: [MatDialogModule, DatePipe],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
 })
@@ -132,9 +134,13 @@ export class GroupComponent implements OnInit {
     private invitationService: InvitationService,
     private requestService: RequestService,
     private nonForcedDeleteService: NonForcedDeleteService,
+    private datePipe: DatePipe,
 
   ) { }
 
+  transformDate(date: String): string {
+    return this.datePipe.transform(date.toString(), 'dd/MM/yyyy')!;
+  }
   async getGroupData(): Promise<void> {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));

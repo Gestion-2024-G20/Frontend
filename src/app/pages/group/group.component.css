@@ -19,6 +19,13 @@ mat-icon {
     gap: 10px;
 }
 
+.buttons-expenditures{
+    display: flex;
+    gap: 10px;
+    padding-bottom: 20%;
+    padding-top: 20%;
+}
+
 .bottom-buttons{
     display: flex;
     margin-top: 10px;

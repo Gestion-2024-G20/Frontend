@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
@@ -28,8 +28,10 @@ import { RequestService } from '../../services/request.service';
     NgIf,
     RouterLink, 
     MatInputModule, 
-    MatFormFieldModule
+    MatFormFieldModule,
+    DatePipe,
   ],
+  providers: [DatePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -48,7 +50,8 @@ export class HomeComponent implements OnInit {
     public dialog: MatDialog, 
     private router: Router,
     private invitationService: InvitationService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private datePipe: DatePipe
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -183,5 +186,9 @@ export class HomeComponent implements OnInit {
       console.log("Entré al catch de deleteGroup!");
       this.snackBarService.open('' + error, 'error');
     }
+  }
+
+  transformDate(date: string) {
+    return this.datePipe.transform(date.toString(), 'dd/MM/yyyy');
   }
 }
