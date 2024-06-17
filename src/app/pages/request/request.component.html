@@ -1,19 +1,19 @@
 <div class="request-content">
   <mat-card>
-    <mat-card-title>Join group <span class="username">{{username}}</span>!</mat-card-title>
+    <mat-card-title>Unirse al grupo <span class="username">{{username}}</span>!</mat-card-title>
     <ng-container *ngIf="userLoggedIn && userDetectedIsMember">
-      <p class="instructions">We detected an active session. You're already a member.</p>
-      <button mat-raised-button color="primary" type="submit" (click)="goTo('/group/' + this.groupId)">View Group Details</button>
+      <p class="instructions">Detectamos una sesión activa. Ya sos miembro.</p>
+      <button mat-raised-button color="primary" type="submit" (click)="goTo('/group/' + this.groupId)">Ver detalles del grupo</button>
     </ng-container>
     <ng-container *ngIf="userLoggedIn && !userDetectedIsMember">
-      <p class="instructions">We detected an active session. Want to join? Click 'Join Group' and an admin will review it.</p>
-      <button mat-raised-button color="primary" type="submit" (click)="sendRequest()">Join group</button>
+      <p class="instructions">Detectamos una sesión activa. Querés unirte? Click 'Unirse' y un administrador revisará la solicitud.</p>
+      <button mat-raised-button color="primary" type="submit" (click)="sendRequest()">Unirse</button>
     </ng-container>
     <ng-container *ngIf="!userLoggedIn">
-      <p class="instructions">You must be logged in to join a group. Log in or register to continue</p>
+      <p class="instructions">Debes estar loggeado para unirte a un grupo. Iniciá sesión o registrate para continuar</p>
       <section class="buttons">
         <button mat-raised-button color="primary" type="submit" (click)="goTo('login')">Login</button>
-        <button mat-raised-button color="secondary" type="submit" (click)="goTo('register')">Register</button>
+        <button mat-raised-button color="secondary" type="submit" (click)="goTo('register')">Registro</button>
       </section>
     </ng-container>
   </mat-card>

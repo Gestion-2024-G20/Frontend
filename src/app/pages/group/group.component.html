@@ -141,7 +141,7 @@
                         </table>
                     </div>
                     @if (this.isAdmin && invitationUrl){
-                        Copy link to invite members: {{this.invitationUrl}}
+                        Copia el link para invitar miembros: {{this.invitationUrl}}
                     }
                 </div>
             </mat-expansion-panel>
@@ -197,8 +197,9 @@
                 </mat-expansion-panel-header>
                 <div class="p-3 bg-primary-subtle text-primary-emphasis rounded">
                     <section class="top-buttons">
-                        <button class="btn btn-primary" type="button" (click)="filterExpenditures()">Filtrar gastos</button>
                         <button *ngIf="!this.group.is_deleted" class="btn btn-primary" type="button" (click)="createExpenditure()">Añadir Gasto</button>
+                        <button class="btn btn-primary" type="button" (click)="filterExpenditures()">Filtrar gastos</button>
+                        <button *ngIf="!this.group.is_deleted && this.filtered" class="btn btn-primary" type="button" (click)="removeFilters()"><mat-icon>filter_alt_off</mat-icon></button>
                     </section>
                     <table class="table table-striped table-hover table-container">
                         <thead class="thead-dark">
@@ -215,14 +216,14 @@
                             @for (e of this.expenditures; track $index) {
 
                             <tr>
-                            <td>{{e.id_user}}</td>
+                            <td>{{e.username}}</td>
                             <td>{{e.description}}</td>
                             <td>{{e.amount}}</td>
                             <td>{{e.time_created}}</td>
                             <td>{{e.name_category}}</td>
                             <td *ngIf="this.isAdmin && !this.group.is_deleted" class="buttons">
-                                <button type="button" class="btn btn-primary" (click)="updateExpenditure(e)">Editar Gasto</button>
-                                <button type="button" class="btn btn-danger" (click)="deleteExpenditure(e)">Eliminar Gasto</button>
+                                <button type="button" class="btn btn-primary gasto-btn" (click)="updateExpenditure(e)">Editar</button>
+                                <button type="button" class="btn btn-danger gasto-btn" (click)="deleteExpenditure(e)">Eliminar</button>
                             </td>
                             </tr>
                             }

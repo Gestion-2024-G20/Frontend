@@ -98,6 +98,7 @@ export class GroupComponent implements OnInit {
 
   public categories: Array<Category> = [];
   public expenditures: Array<Expenditure> = [];
+  public filtered: boolean = false;
 
   public displayedColumnsMembers: string[] = ['username', 'type', 'actions'];
   public dataSourceMembers = new MatTableDataSource<MembersTableElement>([]);
@@ -358,11 +359,9 @@ export class GroupComponent implements OnInit {
     });
     let username = await lastValueFrom(dialogRef.afterClosed());
     if (!username) {
-      //console.log("Entré acá!");
       return;
     }
 
-    //console.log("El nombre es" + username);
     const user = await lastValueFrom(this.userService.getUserByUsername(username)) as User[] | null;
     if (!user) {
       this.snackBarService.open('Username no encontrado', 'info');
@@ -475,7 +474,6 @@ export class GroupComponent implements OnInit {
   }
   async deleteExpenditure(expenditure: Expenditure): Promise<void> {
     try {
-      console.log(expenditure);
       const dialogRef = this.dialog.open(DeleteExpenditureDialogComponent, {
         width: '250px',
         data: { title: "Eliminar gasto", content: "Estás seguro de querer eliminar el gasto?", expenditureId: expenditure.id_expenditure }
@@ -559,9 +557,11 @@ export class GroupComponent implements OnInit {
       data: { categories: this.categories, members: this.totalmembers }
     });
     let rsp = await lastValueFrom(dialogRef.afterClosed());
+    console.log("filter"+rsp);
     if (!rsp) {
       return;
     }
+    this.filtered = true;
     this.expendituresFilter.id_category = rsp.id_category;
     this.expendituresFilter.id_user = rsp.id_user;
     this.expendituresFilter.min_date = rsp.min_date;
@@ -687,7 +687,12 @@ export class GroupComponent implements OnInit {
     });
   }
 
-
-
-
+  removeFilters(){
+    this.filtered = false;
+    this.expendituresFilter.id_category = -1;
+    this.expendituresFilter.id_user = -1;
+    this.expendituresFilter.min_date = '';
+    this.expendituresFilter.max_date = '';
+    this.refreshData();
+  }
 }

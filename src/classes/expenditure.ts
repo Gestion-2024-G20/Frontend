@@ -7,4 +7,5 @@ export class Expenditure {
     description : String = "";
     name_category: String = "";
     time_created: String = "";
+    username: String = "";
   }
