@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Group } from '../../../../classes/group';
 import { GroupService } from '../../../services/group.service';
 import { BalanceService } from '../../../services/balance.service';
+import { SnackbarService } from '../../../services/snackbar.service';
 import { lastValueFrom } from 'rxjs';
 export interface DeleteGroupDialogData {
   title: string;
@@ -29,6 +30,7 @@ export class ConfirmDeleteGroupDialogComponent {
     private groupService: GroupService,
     private balanceService: BalanceService,
     public dialogRef: MatDialogRef<ConfirmDeleteGroupDialogComponent>,
+    private snackBarService: SnackbarService, 
     @Inject(MAT_DIALOG_DATA) public data: DeleteGroupDialogData) {}
     
     onNoClick(): void {
@@ -39,6 +41,7 @@ export class ConfirmDeleteGroupDialogComponent {
       try{
       
           await lastValueFrom(this.groupService.deleteGroup(this.data.groupId)) as Group;
+          this.snackBarService.open('Grupo eliminado', 'success');
 
           this.dialogRef.close("Ok");
     } catch (e) {
@@ -50,6 +53,7 @@ export class ConfirmDeleteGroupDialogComponent {
     try{
     
         await lastValueFrom(this.groupService.markGroupAsDeleted(this.data.groupId)) as Group;
+        this.snackBarService.open('El grupo se eliminará cuando ya no queden saldos pendientes', 'success');
 
         this.dialogRef.close("Ok");
   } catch (e) {

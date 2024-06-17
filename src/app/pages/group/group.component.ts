@@ -40,6 +40,7 @@ import { InvitationService } from '../../services/invitation.service';
 import { AddCategoryDialogComponent } from '../../components/addCategoryDialog/addCategoryDialog.component';
 import { TotalBalances } from '../../../classes/totalBalances';
 import { BalanceService } from '../../services/balance.service';
+import { NonForcedDeleteService } from '../../services/nonForcedDelete.service';
 import { RequestService } from '../../services/request.service';
 import { Request } from '../../../classes/request';
 import { SolicitudesListDialogComponent } from '../../components/solicitudesListDialog/solicitudesListDialog.component';
@@ -129,7 +130,8 @@ export class GroupComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private invitationService: InvitationService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private nonForcedDeleteService: NonForcedDeleteService,
 
   ) { }
 
@@ -137,9 +139,12 @@ export class GroupComponent implements OnInit {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
       this.group = groupData!;
+      if (!this.group){
+        this.snackBarService.open('El grupo ha sido eliminado', 'error');
+        this.router.navigateByUrl('/home');
+      }
       console.log(this.group.is_deleted);
-    } catch (error) {
-      // TODO: handle error
+    } catch (error) {   
       this.router.navigateByUrl('/home');
     }
   }
@@ -152,27 +157,30 @@ export class GroupComponent implements OnInit {
       this.groupMembers = members!;
       this.admins = new Array<User>;
       this.members = new Array<User>;
-      for (const member of this.groupMembers) {
-        let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
-        const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
-        if (!user) {
-          throw Error("group member not found");
-        }
-        elm.id_user = user.id_user;
-        elm.username = user.username;
-        elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
-        if (member.is_admin) {
-          if (member.id_user == this.loggedUserId)
-            this.isAdmin = true;
-          this.admins.push(user);
-          elm.type = "admin";
-          arrayMembers.push(elm);
-        } else {
-          elm.type = "member";
-          this.members.push(user);
-          arrayMembers.push(elm);
+      if (this.groupMembers){
+        for (const member of this.groupMembers) {
+          let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
+          const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
+          if (!user) {
+            throw Error("group member not found");
+          }
+          elm.id_user = user.id_user;
+          elm.username = user.username;
+          elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
+          if (member.is_admin) {
+            if (member.id_user == this.loggedUserId)
+              this.isAdmin = true;
+            this.admins.push(user);
+            elm.type = "admin";
+            arrayMembers.push(elm);
+          } else {
+            elm.type = "member";
+            this.members.push(user);
+            arrayMembers.push(elm);
+          }
         }
       }
+
       this.totalmembers = this.admins.concat(this.members);
       this.dataSourceMembers.data = arrayMembers;
     } catch (error) {
@@ -231,6 +239,7 @@ export class GroupComponent implements OnInit {
   async refreshData(): Promise<void> {
     this.reload = true;
     await this.getGroupData();
+    await this.checkNonForcedDelete();
     await this.getMembersData();
     await this.getCategoriesData();
     await this.getExpendituresData();
@@ -669,6 +678,14 @@ export class GroupComponent implements OnInit {
 
     }
 
+  }
+
+  async checkNonForcedDelete(){
+    let isDeleted = await this.nonForcedDeleteService.verifyAndDelete(this.group) as boolean;
+
+    if (isDeleted){
+      this.router.navigate(['/home']);
+    }
   }
 
   goTo(){
