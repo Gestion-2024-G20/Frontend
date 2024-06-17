@@ -191,7 +191,7 @@ export class GroupComponent implements OnInit {
       this.dataSourceMembers.data = arrayMembers;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open('Unknown error retreiving members:' + error, 'error');
+      this.snackBarService.open('Error desconocido obteniendo los miembros:' + error, 'error');
     }
   }
 
@@ -202,7 +202,7 @@ export class GroupComponent implements OnInit {
       this.categories = categories!;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("getCategories error: " + error, 'error');
+      this.snackBarService.open("Eror obteniendo las categorías error: " + error, 'error');
     }
   }
 
@@ -214,7 +214,7 @@ export class GroupComponent implements OnInit {
       this.expenditures = expenditures!;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("getExpenditures error: " + error, 'error');
+      this.snackBarService.open("Error obteniendo los gastos error: " + error, 'error');
     }
   }
 
@@ -238,7 +238,7 @@ export class GroupComponent implements OnInit {
       }
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("get Balance error: " + error, 'error');
+      this.snackBarService.open("Eror obteniendo el balance: " + error, 'error');
     }
   }
 
@@ -339,10 +339,19 @@ export class GroupComponent implements OnInit {
       if (!response) {
         return;
       }
-      await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
-      await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
+      let expendituresFilter = new ExpendituresFilter;
+      expendituresFilter.id_category = category.id_category;
+      expendituresFilter.id_group = this.group.id_group;
+      let expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(expendituresFilter));
+      if (expenditures?.length == 0){
+        await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
+        await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
+  
+        this.snackBarService.open('Categoría eliminada', 'success');
+      } else{
+        this.snackBarService.open('No se pueden eliminar categorías con gastos', 'error');  
+      }
 
-      this.snackBarService.open('Categoría eliminada', 'success');
       await this.refreshData();
     } catch (error) {
       this.snackBarService.open('' + error, 'error');

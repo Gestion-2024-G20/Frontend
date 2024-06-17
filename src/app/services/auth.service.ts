@@ -23,17 +23,17 @@ export class AuthService {
       console.log(users)
       if (!users || users.length < 1) {
         console.error('User not found.');
-        this.snackBarService.open('Wrong username/password.', 'error');
+        this.snackBarService.open('Usuario/contraseña incorrectos.', 'error');
         return Promise.reject('User not found.');
       }
       let user = users[0]; 
       if (password !== user.password) {
         console.error('Authentication error: Password entered does not match the one in the database.');
         console.log('password: ' + password + ' vs DB pass: '+ user.password);
-        this.snackBarService.open('Wrong username/password.', 'error');
+        this.snackBarService.open('Usuario/contraseña incorrectos.', 'error');
         return Promise.reject('Authentication error: Password entered does not match the one in the database.');
       } 
-      this.snackBarService.open('Login success!', 'success');
+      this.snackBarService.open('Login exitoso!', 'success');
       localStorage.setItem(LOGGEDIN, 'true');
       localStorage.setItem(USERID, String(user.id_user));
       localStorage.setItem(USERNAME, String(user.username))
@@ -41,7 +41,7 @@ export class AuthService {
       return Promise.resolve();
     } catch (error) {
       console.error('Error occurred during login:', error);
-      this.snackBarService.open('Error occurred during login. Try again later', 'error');
+      this.snackBarService.open('Ocurrió un error en el login. Vuelva a intentarlo más tarde', 'error');
       return Promise.reject('Error occurred during login:' + error);
     }
   }
@@ -86,10 +86,10 @@ export class AuthService {
       user.lastname = lastName;
       user.profile_image_name = "";
       await lastValueFrom(this.userService.postUser(user));
-      this.snackBarService.open('Register success!', 'success');
+      this.snackBarService.open('Registración exitosa!', 'success');
       return Promise.resolve()
     } catch (error) {
-      this.snackBarService.open('Error occurred during register. Try again later', 'error');
+      this.snackBarService.open('Ocurrió un error en la registración. Vuelva a intentarlo más tarde', 'error');
 
       Promise.reject("Error occurred during register: " + error)
     }

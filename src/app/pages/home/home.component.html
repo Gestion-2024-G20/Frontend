@@ -24,9 +24,9 @@
                         <td (click)="enterGroup($index)">{{ transformDate(group.time_created) }}</td>
                         <td>
                             @if(userGroupsIsAdmin[$index]){
-                                Admin
+                                Administrador
                             } @else {
-                                Member
+                                Miembro
                             }
                         </td>
                         <td class="buttons col-md">
