@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
@@ -50,6 +50,7 @@ import { ExpenditureShareService } from '../../services/expenditureShare.service
 import { EditCategoryDialogComponent } from '../../components/editCategoryDialog/editCategoryDialog.component';
 import { StatisticsModule } from '../../components/statisticsDialog/statistics.module';
 import { StatisticsComponent } from '../../components/statisticsDialog/statistics.component';
+import { NonForcedDeleteService } from '../../services/nonforcedDelete.service';
 export interface MembersTableElement {
   id_user: number;
   username: string;
@@ -75,8 +76,10 @@ export interface MembersTableElement {
     MatCardContent,
     MatTableModule,
     MatExpansionModule,
-    StatisticsModule
+    StatisticsModule,
+    DatePipe,
   ],
+  providers: [MatDialogModule, DatePipe],
   templateUrl: './group.component.html',
   styleUrls: ['./group.component.css']
 })
@@ -129,17 +132,25 @@ export class GroupComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private invitationService: InvitationService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private nonForcedDeleteService: NonForcedDeleteService,
+    private datePipe: DatePipe,
 
   ) { }
 
+  transformDate(date: String): string {
+    return this.datePipe.transform(date.toString(), 'dd/MM/yyyy')!;
+  }
   async getGroupData(): Promise<void> {
     try {
       const groupData = await lastValueFrom(this.groupService.getGroupById(this.id_group));
       this.group = groupData!;
+      if (!this.group){
+        this.snackBarService.open('El grupo ha sido eliminado', 'error');
+        this.router.navigateByUrl('/home');
+      }
       console.log(this.group.is_deleted);
-    } catch (error) {
-      // TODO: handle error
+    } catch (error) {   
       this.router.navigateByUrl('/home');
     }
   }
@@ -152,32 +163,35 @@ export class GroupComponent implements OnInit {
       this.groupMembers = members!;
       this.admins = new Array<User>;
       this.members = new Array<User>;
-      for (const member of this.groupMembers) {
-        let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
-        const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
-        if (!user) {
-          throw Error("group member not found");
-        }
-        elm.id_user = user.id_user;
-        elm.username = user.username;
-        elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
-        if (member.is_admin) {
-          if (member.id_user == this.loggedUserId)
-            this.isAdmin = true;
-          this.admins.push(user);
-          elm.type = "admin";
-          arrayMembers.push(elm);
-        } else {
-          elm.type = "member";
-          this.members.push(user);
-          arrayMembers.push(elm);
+      if (this.groupMembers){
+        for (const member of this.groupMembers) {
+          let elm: MembersTableElement = { id_user: 0, username: "", type: "", profilePhoto_filename: "" };
+          const user: User = await lastValueFrom(this.userService.getUser(member.id_user)) as User;
+          if (!user) {
+            throw Error("group member not found");
+          }
+          elm.id_user = user.id_user;
+          elm.username = user.username;
+          elm.profilePhoto_filename = user.profile_image_name; //Agrego el nombre de la imagen de foto de perfil
+          if (member.is_admin) {
+            if (member.id_user == this.loggedUserId)
+              this.isAdmin = true;
+            this.admins.push(user);
+            elm.type = "admin";
+            arrayMembers.push(elm);
+          } else {
+            elm.type = "member";
+            this.members.push(user);
+            arrayMembers.push(elm);
+          }
         }
       }
+
       this.totalmembers = this.admins.concat(this.members);
       this.dataSourceMembers.data = arrayMembers;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open('Unknown error retreiving members:' + error, 'error');
+      this.snackBarService.open('Error desconocido obteniendo los miembros:' + error, 'error');
     }
   }
 
@@ -188,7 +202,7 @@ export class GroupComponent implements OnInit {
       this.categories = categories!;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("getCategories error: " + error, 'error');
+      this.snackBarService.open("Eror obteniendo las categorías error: " + error, 'error');
     }
   }
 
@@ -200,7 +214,7 @@ export class GroupComponent implements OnInit {
       this.expenditures = expenditures!;
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("getExpenditures error: " + error, 'error');
+      this.snackBarService.open("Error obteniendo los gastos error: " + error, 'error');
     }
   }
 
@@ -224,13 +238,14 @@ export class GroupComponent implements OnInit {
       }
     } catch (error) {
       // TODO: handle error
-      this.snackBarService.open("get Balance error: " + error, 'error');
+      this.snackBarService.open("Eror obteniendo el balance: " + error, 'error');
     }
   }
 
   async refreshData(): Promise<void> {
     this.reload = true;
     await this.getGroupData();
+    await this.checkNonForcedDelete();
     await this.getMembersData();
     await this.getCategoriesData();
     await this.getExpendituresData();
@@ -324,10 +339,19 @@ export class GroupComponent implements OnInit {
       if (!response) {
         return;
       }
-      await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
-      await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
+      let expendituresFilter = new ExpendituresFilter;
+      expendituresFilter.id_category = category.id_category;
+      expendituresFilter.id_group = this.group.id_group;
+      let expenditures = await lastValueFrom(this.expenditureService.getGroupExpenditures(expendituresFilter));
+      if (expenditures?.length == 0){
+        await lastValueFrom(this.categoryShareService.deleteCategoryCategoryShares(category.id_category));
+        await lastValueFrom(this.categoryService.deleteCategory(category.id_category));
+  
+        this.snackBarService.open('Categoría eliminada', 'success');
+      } else{
+        this.snackBarService.open('No se pueden eliminar categorías con gastos', 'error');  
+      }
 
-      this.snackBarService.open('Categoría eliminada', 'success');
       await this.refreshData();
     } catch (error) {
       this.snackBarService.open('' + error, 'error');
@@ -669,6 +693,14 @@ export class GroupComponent implements OnInit {
 
     }
 
+  }
+
+  async checkNonForcedDelete(){
+    let isDeleted = await this.nonForcedDeleteService.verifyAndDelete(this.group) as boolean;
+
+    if (isDeleted){
+      this.router.navigate(['/home']);
+    }
   }
 
   goTo(){

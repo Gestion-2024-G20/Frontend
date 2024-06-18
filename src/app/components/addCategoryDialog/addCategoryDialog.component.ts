@@ -76,12 +76,12 @@ export class AddCategoryDialogComponent {
           // chequea que se ingreso solo numeros
           var reg = new RegExp('^[0-9]*$');
           if (!this.data.memberPercentage[i]) {
-            this.data.msgError = "must insert values for every user, even if its 0."; 
+            this.data.msgError = "debe insertar los valores para todos los usuarios, aunque algunos sean 0."; 
             this.data.showError = true; 
             return;
           } else if (!reg.test(this.data.memberPercentage[i])){
             console.log(this.data.memberPercentage[i]); 
-            this.data.msgError = "must insert only numbers"; 
+            this.data.msgError = "solo puede insertar números"; 
             this.data.showError = true; 
             return;
           } else {
@@ -119,7 +119,7 @@ export class AddCategoryDialogComponent {
         this.dialogRef.close( createdCategory );
       } catch (e) {
         this.data.showError = true;
-        this.data.msgError = "Error creating category: " + e;
+        this.data.msgError = "Error creando la categoría: " + e;
         return; 
       } 
 

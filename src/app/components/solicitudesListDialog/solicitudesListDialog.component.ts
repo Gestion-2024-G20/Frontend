@@ -64,10 +64,10 @@ export class SolicitudesListDialogComponent implements OnInit {
     groupMember.is_admin = false;
     const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
     if (!groupMemberCreated) {
-      this.snackBarService.open('Could not join group', 'error');
+      this.snackBarService.open('No se pudo unirse al grupo', 'error');
       return;
     }
-    this.snackBarService.open('Joined group', 'success');
+    this.snackBarService.open('Unido al grupo', 'success');
     await lastValueFrom(this.invitationService.deleteInvitation(invitation.id_invitation));
     this.refreshData()
   }

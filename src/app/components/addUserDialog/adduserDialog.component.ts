@@ -36,7 +36,7 @@ export class AddUserDialogComponent {
     async onClick(): Promise<void> {
       if (!this.data.value){
         this.data.showError = true;
-        this.data.msgError = "Must insert an username";
+        this.data.msgError = "Debe ingresar un usuario";
         return; 
       }
 
@@ -44,12 +44,12 @@ export class AddUserDialogComponent {
       let usersFound = await lastValueFrom(this.userService.getUserByUsername(this.data.value)) as User[];
       if (!usersFound || usersFound.length < 1) {
         this.data.showError = true;
-        this.data.msgError = "Username not found";
+        this.data.msgError = "Usuario no encontrado";
         return; 
       }
       if (usersFound[0].id_user == this.data.userIdRequestor) {
         this.data.showError = true;
-        this.data.msgError = "Cannot add yourself to the group";
+        this.data.msgError = "No se puede agregar al usuario actual";
         return; 
       }
 

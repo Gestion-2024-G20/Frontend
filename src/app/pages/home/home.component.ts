@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Group } from '../../../classes/group';
 import { GroupService } from '../../services/group.service';
@@ -28,8 +28,10 @@ import { RequestService } from '../../services/request.service';
     NgIf,
     RouterLink, 
     MatInputModule, 
-    MatFormFieldModule
+    MatFormFieldModule,
+    DatePipe,
   ],
+  providers: [DatePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -48,7 +50,8 @@ export class HomeComponent implements OnInit {
     public dialog: MatDialog, 
     private router: Router,
     private invitationService: InvitationService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private datePipe: DatePipe
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -94,13 +97,13 @@ export class HomeComponent implements OnInit {
 
     const dialogRef = this.dialog.open(NewGroupDialogComponent, {
       width: '250px',
-      data: {title: "New Group", content: "Insert the new group name", id_user_logged: this.authService.loggedUserId()}
+      data: {title: "Nuevo grupo", content: "Inserte el nombre del grupo", id_user_logged: this.authService.loggedUserId()}
     });
     const groupCreatedName = await lastValueFrom(dialogRef.afterClosed());
     console.log(groupCreatedName);
     
     if (groupCreatedName){
-      this.snackBarService.open('Group \"' + groupCreatedName + '\" created', 'success');
+      this.snackBarService.open('Grupo \"' + groupCreatedName + '\" creado', 'success');
     }
     await this.refreshGroups();
   }
@@ -112,11 +115,11 @@ export class HomeComponent implements OnInit {
     group.time_created = this.userGroups[index].time_created; 
     const dialogRef = this.dialog.open(ChangeGroupNameDialogComponent, {
       width: '250px',
-      data: {title: "Edit Group name", content: "Insert the new group name", groupToEdit: group}
+      data: {title: "Editar nombre del grupo", content: "Inserte el nuevo nombre del grupo", groupToEdit: group}
     });
     const groupEditedName = await lastValueFrom(dialogRef.afterClosed());
     if (groupEditedName){
-      this.snackBarService.open('Group name updated', 'success');
+      this.snackBarService.open('Nombre del grupo actualizado', 'success');
     }
     this.refreshGroups()
   }
@@ -130,7 +133,7 @@ export class HomeComponent implements OnInit {
   async acceptInvitation(index:number): Promise<void> {
     const invitation = await lastValueFrom(this.invitationService.getInvitationById(index)) as Invitation;
     if (!invitation) {
-      this.snackBarService.open('Invitation not found', 'error');
+      this.snackBarService.open('Invitación no encontrada', 'error');
       return;
     }
     const groupMember = new GroupMember();
@@ -139,10 +142,10 @@ export class HomeComponent implements OnInit {
     groupMember.is_admin = false;
     const groupMemberCreated = await lastValueFrom(this.groupMemberService.postGroupMember(groupMember)) as GroupMember;
     if (!groupMemberCreated) {
-      this.snackBarService.open('Could not join group', 'error');
+      this.snackBarService.open('No se pudo unirse al grupo', 'error');
       return;
     }
-    this.snackBarService.open('Joined group', 'success');
+    this.snackBarService.open('Invitación aceptada', 'success');
     await lastValueFrom(this.invitationService.deleteInvitation(invitation.id_invitation));
     this.refreshGroups();
     this.refreshInvitations();
@@ -150,7 +153,7 @@ export class HomeComponent implements OnInit {
 
   async rejectInvitation(index:number): Promise<void> {
     await lastValueFrom(this.invitationService.deleteInvitation(index));
-    this.snackBarService.open('Invitation rejected', 'success');
+    this.snackBarService.open('Invitación rechazada', 'success');
     this.refreshInvitations();
   }
 
@@ -177,13 +180,15 @@ export class HomeComponent implements OnInit {
       } else if (!response){
         return;
       }
-
-      this.snackBarService.open('Grupo eliminado', 'success');
       await this.refreshGroups();
     }
     catch(error){
       console.log("Entré al catch de deleteGroup!");
       this.snackBarService.open('' + error, 'error');
     }
+  }
+
+  transformDate(date: string) {
+    return this.datePipe.transform(date.toString(), 'dd/MM/yyyy');
   }
 }

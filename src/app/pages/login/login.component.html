@@ -5,19 +5,19 @@
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
             <mat-form-field>
-                <mat-label>Username</mat-label>
+                <mat-label>Usuario</mat-label>
                 <input matInput type="text" formControlName="username"/>
             </mat-form-field>
 
             <mat-form-field>
-                <mat-label>Password</mat-label>
+                <mat-label>Contrase&ntilde;a</mat-label>
                 <input matInput type="password" formControlName="password"/>
             </mat-form-field>
 
             <div class="form-group">
                 <button mat-raised-button color="primary" type="submit">Login</button>
             </div>
-            <span class="signup">Si no tienes una cuenta, haz click <a color="secondary" type="button" href="register" >aqui</a> para registrate</span>
+            <span class="signup">Si no tienes una cuenta, haz click <a color="secondary" type="button" href="register" >aqui</a> para registrarte</span>
         </form>
     </mat-card>
 </div>

@@ -46,15 +46,18 @@ export class UpdateExpenditureDialogComponent {
     private categoryShareService: CategoryShareService,
     public dialogRef: MatDialogRef<UpdateExpenditureDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UpdateExpenditureDialogData) {}
+
+    ngOnInit(){
+      this.data.amountString = this.data.expenditure.amount.toString(); 
+      this.data.category_index = this.data.categories.findIndex(c => c.id_category == this.data.expenditure.id_category); 
+      this.data.description = this.data.expenditure.description.toString(); 
+    }
     onNoClick(): void {
       this.data.value = ""; 
       this.dialogRef.close();
     }
     async onClick(): Promise<void> {
       try { 
-        console.log(this.data.amount)
-        console.log(this.data.category_index)
-        console.log(this.data.description)
         this.data.amount = +this.data.amountString; 
         if (!this.data.amount){
           this.data.showAmountError = true;
