@@ -55,7 +55,7 @@
             <tbody>
                 @for (invitation of this.userInvitations; track $index) {
                     <tr>
-                        <td>{{ invitation.id_group }}</td>
+                        <td>{{ invitation.group_name }}</td>
                         <td class="buttons col-md">
                             <button class="btn btn-success" (click)="acceptInvitation(invitation.id_invitation)">Aceptar</button>
                             <button class="btn btn-danger" (click)="rejectInvitation(invitation.id_invitation)">Cancelar</button>
@@ -78,7 +78,7 @@
             <tbody>
                 @for (invitation of this.userRequests; track $index) {
                     <tr>
-                        <td>{{ invitation.id_group }}</td>
+                        <td>{{ invitation.group_name }}</td>
                         <td class="buttons col-md">
                             <button class="btn btn-danger" (click)="cancelRequest(invitation.id_invitation)">Cancelar</button>
                         </td>
