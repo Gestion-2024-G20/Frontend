@@ -365,7 +365,7 @@ export class GroupComponent implements OnInit {
         throw Error("not found category shares");
       }
       const dialogRef = this.dialog.open(ListSharesDialogComponent, {
-        width: '250px',
+        width: '400px',
         data: { category: category, category_shares: category_shares }
       });
       const response = await lastValueFrom(dialogRef.afterClosed());

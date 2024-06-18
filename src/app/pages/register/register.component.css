@@ -60,3 +60,7 @@ mat-error {
 mat-icon {
     vertical-align: middle;
 }
+
+.logo{
+    width: 40%;
+}
